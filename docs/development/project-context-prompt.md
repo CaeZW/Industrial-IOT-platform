@@ -50,7 +50,7 @@ Users are authorized using:
 User → Role → Permission → Resource Scope
 ```
 
-Scopes include plant, area, line, machine and device.
+Scopes include plant, area, machine and device.
 
 Frontend guards are UX; backend guards/policies are security.
 

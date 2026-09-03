@@ -46,7 +46,6 @@ Scopes:
 ```text
 plant
 area
-line
 machine
 device
 ```

@@ -3,13 +3,6 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "echo 'Angular scaffold is next sprint'",
-    "build": "tsc --noEmit",
-    "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
-    "test": "node -e \"console.log('Web tests not yet scaffolded')\""
-  },
-  "devDependencies": {
-    "typescript": "^5.9.0"
+    "dev": "echo 'Angular scaffold is intentionally deferred to Sprint 1'"
   }
 }

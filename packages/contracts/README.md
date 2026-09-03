@@ -8,6 +8,8 @@ It may contain:
 - WebSocket event contracts;
 - shared enums/types;
 - versioned transport payloads.
+- runtime guards for untrusted MQTT payloads;
+- canonical MQTT topic builders and controlled subscriptions.
 
 It must NOT contain:
 
@@ -17,3 +19,6 @@ It must NOT contain:
 - Angular components;
 - Node-RED flow implementations;
 - infrastructure-specific code.
+
+The package emits JavaScript and declaration files to `dist/`. Consumers import
+the package root; they do not import files from `src/`.

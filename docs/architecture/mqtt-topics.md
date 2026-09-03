@@ -36,6 +36,15 @@ Example:
 iot/v1/devices/ESP32_Client01/data
 ```
 
+## Identifier rule
+
+`{machineId}` and `{deviceId}` are stable MQTT integration identifiers. For the
+initial platform they correspond to the unique `machines.code` and
+`devices.code` values, not to display names or database primary keys.
+
+Changing an integrated code is a controlled breaking change: update publishers,
+ACLs and consumers together. Renaming a display name never changes a topic.
+
 ## Semantics
 
 `data` = measurements/process values.

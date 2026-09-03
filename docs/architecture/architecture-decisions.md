@@ -50,3 +50,27 @@ These are independent runtime policies.
 ## ADR-012 — Production isolation
 
 The existing plant infrastructure stays untouched during development.
+
+## ADR-013 — Canonical event time
+
+MQTT application event envelopes use `eventTime` in UTC. Receive and persistence
+times are separate backend concerns.
+
+## ADR-014 — Stable MQTT identifiers
+
+Machine/device topic identifiers use their unique, stable integration `code`,
+not display names or database primary keys.
+
+## ADR-015 — QoS 1 requires idempotency
+
+Data, state, events and commands initially use QoS 1. Consumers deduplicate
+events and commands by their canonical identifiers. Commands are never retained.
+
+## ADR-016 — Development PostgreSQL loopback access
+
+The development Compose stack publishes PostgreSQL only on
+`127.0.0.1:55432`. This supports local NestJS processes, migrations and pgAdmin
+without exposing the database to the LAN.
+
+Node-RED remains isolated because it is not attached to `application-data`.
+Production removes the PostgreSQL host port and uses an internal data network.

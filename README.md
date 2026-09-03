@@ -92,9 +92,15 @@ application-data
 └── docker-postgre
 ```
 
-`application-data` is internal.
+For local development, `application-data` is a private bridge and PostgreSQL is
+published exclusively on `127.0.0.1:55432`. This allows local NestJS processes,
+migrations and pgAdmin to connect without exposing PostgreSQL to the LAN.
 
 Node-RED MUST NOT have a direct route to PostgreSQL.
+
+Production must remove the PostgreSQL host-port mapping and use an internal
+application-data network. The development Compose file is not a production
+deployment definition.
 
 ## Local environment
 
@@ -102,7 +108,9 @@ Development configuration is stored in `.env`.
 
 `.env` MUST NOT be committed.
 
-Do not create or maintain `.env.example` unless the project later needs a multi-developer/shared setup. The current local project intentionally keeps environment configuration in `.env` plus documentation.
+Do not create or maintain `.env.example` or `.env.template`. This project keeps
+local environment configuration only in `.env`; variable names are documented
+without publishing secret-bearing template files.
 
 Never commit:
 
@@ -148,6 +156,24 @@ The infrastructure must remain demonstrably functional:
 - the production installation remains unaffected.
 
 Automated application tests belong primarily to implementation sprints. Infrastructure validation in Sprint 0 is performed through explicit operational checks.
+
+Repository and shared-contract checks:
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+Local infrastructure health, MQTT communication, Node-RED authentication and
+network isolation:
+
+```bash
+pnpm infra:validate
+```
+
+Use `pnpm infra:validate:start` when the local stack is stopped.
 
 ## Tooling baseline
 

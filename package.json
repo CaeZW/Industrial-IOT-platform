@@ -8,9 +8,17 @@
     "pnpm": ">=11 <12"
   },
   "scripts": {
-    "lint": "pnpm -r --if-present lint",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
-    "build": "pnpm -r --if-present build"
+    "lint": "eslint eslint.config.mjs scripts tests packages/contracts/src --max-warnings 0",
+    "typecheck": "pnpm --filter @industrial-iot-platform/contracts typecheck",
+    "test": "node --test tests/repository.test.mjs && pnpm --filter @industrial-iot-platform/contracts test",
+    "build": "pnpm --filter @industrial-iot-platform/contracts build",
+    "infra:validate": "node scripts/validate-infrastructure.mjs",
+    "infra:validate:start": "node scripts/validate-infrastructure.mjs --start"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.9.1",
+    "js-yaml": "5.4.1",
+    "typescript-eslint": "8.69.0"
   }
 }

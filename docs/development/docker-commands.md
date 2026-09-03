@@ -46,6 +46,23 @@ docker network inspect industrial-iot-platform_iot-messaging
 docker network inspect industrial-iot-platform_application-data
 ```
 
+## Automated Sprint 0 validation
+
+Validate an already-running stack:
+
+```bash
+pnpm infra:validate
+```
+
+Start the local stack, wait for healthchecks and validate isolation:
+
+```bash
+pnpm infra:validate:start
+```
+
+The validator checks loopback bindings, service health and that Node-RED and
+PostgreSQL do not share a Docker network. It never connects to production.
+
 ## Stats
 
 ```bash

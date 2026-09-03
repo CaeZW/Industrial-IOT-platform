@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      POSTGRES_DB: industrial_iot_ci
+      POSTGRES_USER: industrial_iot_ci
+      POSTGRES_PASSWORD: ci-only-placeholder
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 55432
+      MQTT_HOST: 127.0.0.1
+      MQTT_PORT: 51883
+      MQTT_WS_PORT: 59001
+      NODERED_HOST: 127.0.0.1
+      NODERED_PORT: 51880
+      NODERED_USERNAME: ci-admin
+      NODERED_PASSWORD_HASH: ci-only-placeholder
+      TZ: UTC
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Validate Docker Compose
+        run: docker compose -f infra/compose/compose.yaml config --quiet
+
+      - name: Validate simulator JSON
+        run: node -e "JSON.parse(require('node:fs').readFileSync('infra/compose/nodered/flows.simulator.json', 'utf8'))"
+
+      - name: Start and validate local infrastructure
+        run: pnpm infra:validate:start
+
+      - name: Stop local infrastructure
+        if: always()
+        run: docker compose -f infra/compose/compose.yaml down

@@ -1,8 +1,14 @@
 name: industrial-iot-platform
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-file: "3"
+    max-size: 10m
+
 services:
   postgres:
-    image: postgres:18.4
+    image: postgres:18.4@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636
     container_name: docker-postgre
     restart: unless-stopped
     environment:
@@ -20,9 +26,10 @@ services:
       retries: 12
     networks:
       - application-data
+    logging: *default-logging
 
   mosquitto:
-    image: eclipse-mosquitto:2.1.2-alpine
+    image: eclipse-mosquitto:2.1.2-alpine@sha256:6f8d8a947c506f8a2290ec65cd4bd2bc7cb4d43fb5f6271f861cb013e2ef9797
     container_name: docker-mosquitto
     restart: unless-stopped
     ports:
@@ -32,11 +39,30 @@ services:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mosquitto_pub",
+          "-h",
+          "127.0.0.1",
+          "-p",
+          "1883",
+          "-t",
+          "iot/v1/healthcheck",
+          "-m",
+          "ping",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
     networks:
       - iot-messaging
+    logging: *default-logging
 
   nodered:
-    image: nodered/node-red:5.0.1-debian
+    image: nodered/node-red:5.0.1-debian@sha256:8ac6d8a907c89bb6cf1cf5c23379864d423904ce800dca60e295d04b91398223
     container_name: docker-nodered
     restart: unless-stopped
     environment:
@@ -49,9 +75,24 @@ services:
       - nodered_data:/data
       - ./nodered/settings.js:/data/settings.js:ro
     depends_on:
-      - mosquitto
+      mosquitto:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:1880/').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     networks:
       - iot-messaging
+    logging: *default-logging
 
 volumes:
   postgres_data:
@@ -65,4 +106,3 @@ networks:
 
   application-data:
     driver: bridge
-    internal: true

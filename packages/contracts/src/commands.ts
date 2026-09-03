@@ -1,9 +1,6 @@
-import type { EventEnvelope } from './common.js';
+import type { JsonObject } from './common.js';
 
-export type CommandStatus =
-  | 'PENDING'
-  | 'AUTHORIZED'
-  | 'DISPATCHED'
+export type CommandResultStatus =
   | 'ACKNOWLEDGED'
   | 'COMPLETED'
   | 'FAILED'
@@ -11,29 +8,22 @@ export type CommandStatus =
   | 'REJECTED'
   | 'CANCELLED';
 
-export interface CommandRequestedPayload {
+export interface MachineCommandMessage {
   commandId: string;
-  machineId: string;
-  deviceId?: string;
+  correlationId: string;
+  idempotencyKey: string;
   commandType: string;
-  parameters: Record<string, unknown>;
-  requestedBy: string;
+  createdAt: string;
+  expiresAt: string;
+  parameters: JsonObject;
 }
 
-export interface CommandResultPayload {
+export interface MachineCommandResultMessage {
   commandId: string;
-  status: CommandStatus;
-  result?: Record<string, unknown>;
+  correlationId: string;
+  status: CommandResultStatus;
+  completedAt?: string;
+  result?: JsonObject;
   errorCode?: string;
   errorMessage?: string;
 }
-
-export type CommandRequestedEvent = EventEnvelope<
-  'command.requested',
-  CommandRequestedPayload
->;
-
-export type CommandResultEvent = EventEnvelope<
-  'command.result',
-  CommandResultPayload
->;

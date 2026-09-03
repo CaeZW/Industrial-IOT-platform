@@ -121,7 +121,13 @@ application-data
 └── docker-postgre
 ```
 
-`application-data` is internal.
+`application-data` is a private development bridge. PostgreSQL is published only
+on `127.0.0.1:55432` so local NestJS processes, migrations and administrative
+tools can connect without exposing the database to the plant LAN.
+
+Node-RED is not attached to `application-data` and therefore has no Docker
+network route to PostgreSQL. A production deployment must remove the host port
+and use an internal application-data network.
 
 CRITICAL:
 
@@ -1237,7 +1243,7 @@ event_time
 data_id
 readings JSONB
 source_type
-legacy_device_id
+legacy_device_data_id
 created_at
 ```
 
@@ -1961,7 +1967,9 @@ Development secrets:
 
 must never be committed.
 
-`.env.example` may be committed.
+The project intentionally maintains only the local `.env` file and does not
+create or maintain `.env.example` or `.env.template` files. Environment
+variable names are documented in `docs/development/environment.md`.
 
 MQTT/Node-RED credentials must not be embedded in source code.
 
@@ -2249,9 +2257,9 @@ infra/
 └── compose/
 
 AGENTS.md
-PROJECT_MASTER_CONTEXT.md
+PROJECT_CONTEXT.md
 README.md
-.env.example
+.env (local only, ignored by Git)
 .gitignore
 package.json
 pnpm-workspace.yaml
@@ -2268,6 +2276,7 @@ Do not recreate it unless required.
 Current infrastructure status:
 
 ```text
+Git repository  ✅
 PostgreSQL      ✅
 Mosquitto       ✅
 Node-RED        ✅
@@ -2276,6 +2285,10 @@ Network isolation ✅
 .env            ✅
 .gitignore      ✅
 Node-RED auth   ✅
+CI baseline     ✅
+Shared contracts ✅
+Quality gates   ✅
+Local simulator ✅
 ```
 
 The project is now ready for application development.
@@ -2290,7 +2303,7 @@ Codex must inspect:
 
 ```text
 AGENTS.md
-PROJECT_MASTER_CONTEXT.md
+PROJECT_CONTEXT.md
 README.md
 apps/
 packages/

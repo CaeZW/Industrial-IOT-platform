@@ -12,8 +12,6 @@ coverage/
 # Environment / secrets
 .env
 .env.*
-!.env.example
-!.env.template
 
 # Certificates / keys
 *.key

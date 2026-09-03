@@ -6,7 +6,7 @@ Every application event uses a common envelope:
 eventId
 eventType
 schemaVersion
-timestamp
+eventTime
 correlationId
 source
 payload
@@ -22,3 +22,8 @@ Telemetry should distinguish at least:
 
 Contracts must be versionable without silently breaking consumers.
 Canonical TypeScript contracts live in `packages/contracts`.
+
+Command requests and command results are command messages, not application event
+envelopes. Their canonical wire contracts are also defined in
+`packages/contracts` and include the identifiers and timestamps required for
+safe physical execution.
