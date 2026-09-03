@@ -1,0 +1,68 @@
+name: industrial-iot-platform
+
+services:
+  postgres:
+    image: postgres:18.4
+    container_name: docker-postgre
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_HOST}:${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - application-data
+
+  mosquitto:
+    image: eclipse-mosquitto:2.1.2-alpine
+    container_name: docker-mosquitto
+    restart: unless-stopped
+    ports:
+      - "${MQTT_HOST}:${MQTT_PORT}:1883"
+      - "${MQTT_HOST}:${MQTT_WS_PORT}:9001"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - iot-messaging
+
+  nodered:
+    image: nodered/node-red:5.0.1-debian
+    container_name: docker-nodered
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+      NODERED_USERNAME: ${NODERED_USERNAME}
+      NODERED_PASSWORD_HASH: ${NODERED_PASSWORD_HASH}
+    ports:
+      - "${NODERED_HOST}:${NODERED_PORT}:1880"
+    volumes:
+      - nodered_data:/data
+      - ./nodered/settings.js:/data/settings.js:ro
+    depends_on:
+      - mosquitto
+    networks:
+      - iot-messaging
+
+volumes:
+  postgres_data:
+  mosquitto_data:
+  mosquitto_log:
+  nodered_data:
+
+networks:
+  iot-messaging:
+    driver: bridge
+
+  application-data:
+    driver: bridge
+    internal: true

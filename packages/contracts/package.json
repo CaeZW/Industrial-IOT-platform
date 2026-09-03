@@ -1,0 +1,21 @@
+{
+  "name": "@industrial-iot-platform/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node -e \"console.log('Contracts tests not yet scaffolded')\""
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,141 @@
+Arrancar toda la infraestructura:
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml up -d
+
+Detener containers
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml stop
+*Esto los detiene pero conserva containers y volúmenes.
+
+Arrancar nuevamente
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml start
+
+Detener y eliminar containers
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml down
+*Esto elimina containers/redes de Compose, pero conserva los volúmenes.
+
+Eliminar también los datos
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml down -v
+
+2. Ver estado de todos los servicios
+
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml ps
+
+    docker ps
+
+3. Logs generales
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml logs
+
+    docker compose --env-file .env \
+    -f infra/compose/compose.yaml logs -f
+4. Logs de un servicio
+* PostgreSQL
+    docker logs docker-postgre
+    docker logs -f docker-postgre
+    docker logs --tail 100 docker-postgre
+* Mosquitto
+    docker logs docker-mosquitto
+* Node-RED
+    docker logs docker-nodered
+    docker logs -f docker-nodered
+5. Entrar dentro de un container
+* PostgreSQL
+    docker exec -it docker-postgre bash
+* Node-RED
+    docker exec -it docker-nodered bash
+* Mosquitto
+    docker exec -it docker-mosquitto sh
+6. PostgreSQL
+    docker exec docker-postgre \
+    pg_isready \
+    -U alcosiot_dev \
+    -d alcosiot
+Entrar a PostgreSQL
+    docker exec -it docker-postgre \
+    psql \
+    -U alcosiot_dev \
+    -d alcosiot
+
+SELECT version();
+SELECT current_database();
+SELECT current_user;
+
+Salir:
+\q
+
+7. Mosquitto
+* Verificar puertos publicados
+    docker compose -f infra/compose/compose.yaml port mosquitto 1883
+* Suscribirse
+    docker exec -it docker-mosquitto \
+    mosquitto_sub \
+    -h localhost \
+    -p 1883 \
+    -t "iot/v1/test/#" \
+    -v
+* Publicar
+    docker exec docker-mosquitto \
+    mosquitto_pub \
+    -h localhost \
+    -p 1883 \
+    -t "iot/v1/test/hello" \
+    -m '{"message":"hello"}'
+8. Node-RED
+
+* Navegador:
+    http://localhost:51880
+* Logs:
+    docker logs -f docker-nodered
+* Entrar al container:
+    docker exec -it docker-nodered bash
+* Comprobar el archivo de configuración:
+    docker exec docker-nodered \
+    cat /data/settings.js
+
+9. Ver las redes
+
+    docker network ls
+Después:
+    docker network inspect \
+    industrial-iot-platform_iot-messaging
+y:
+    docker network inspect \
+    industrial-iot-platform_application-data
+Queremos:
+    iot-messaging
+    ├── docker-mosquitto
+    └── docker-nodered
+y:
+    application-data
+    └── docker-postgre
+10. Ver volúmenes
+    docker volume ls
+Deberías tener:
+    industrial-iot-platform_postgres_data
+    industrial-iot-platform_mosquitto_data
+    industrial-iot-platform_mosquitto_log
+    industrial-iot-platform_nodered_data
+Ver un volumen:
+    docker volume inspect industrial-iot-platform_postgres_data
+11. Ver consumo de CPU y RAM
+    docker stats
+O sólo nuestros servicios:
+    docker stats \
+    docker-postgre \
+    docker-mosquitto \
+    docker-nodered
+Esto nos permitirá posteriormente observar:
+    CPU
+    RAM
+    Network I/O
+    Block I/O
+12. Inspeccionar configuración real
+    docker compose \
+    --env-file .env \
+    -f infra/compose/compose.yaml config
+Este comando ya nos ayudó a detectar el problema del $ en bcrypt.

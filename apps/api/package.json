@@ -1,0 +1,15 @@
+{
+  "name": "@industrial-iot-platform/api",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "echo 'NestJS scaffold is next sprint'",
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node -e \"console.log('API tests not yet scaffolded')\""
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
