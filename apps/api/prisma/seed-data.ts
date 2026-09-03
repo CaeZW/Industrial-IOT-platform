@@ -43,7 +43,7 @@ export const machines = [
   { legacyId: 15, name: 'Tanque Reactor 1000L', code: 'MQ-11-1', area: 'Líquidos Orales', description: 'Producción de Líquidos Orales' },
   { legacyId: 16, name: 'Tanque Reactor 500L', code: 'MQ-11-2', area: 'Líquidos Orales', description: 'Producción de Líquidos Orales' },
   { legacyId: 17, name: 'Tanque Reactor Curadil', code: 'MQ-12-11', area: 'Líquidos Orales', description: 'Producción de Líquidos Orales' },
-  { legacyId: 18, name: 'Sistema de Alarmas', code: null, area: 'Mantenimiento', description: 'Sensores de alarma en planta' },
+  { legacyId: 18, name: 'Sistema de Alarmas', code: 'AL-01-M', area: 'Mantenimiento', description: 'Sensores de alarma en planta' },
   { legacyId: 19, name: 'Tanque Reactor Estériles', code: 'MQ-13-53', area: 'Estériles', description: 'Producción de Estériles' },
   { legacyId: 20, name: 'UTA #1 (MUESTREO)', code: 'MQ-8-4', area: 'Materia Prima', description: 'HVAC' },
   { legacyId: 21, name: 'UTA #2 (DISPENSACIÓN)', code: 'MQ-24-3', area: 'Mantenimiento', description: 'HVAC' },

@@ -10,6 +10,7 @@ import {
 import type { PrismaService } from '../src/database/prisma.service.js';
 import { HealthService } from '../src/health/health.service.js';
 import type { MqttConnectionService } from '../src/messaging/mqtt-connection.service.js';
+import { devices, machines } from '../prisma/seed-data.js';
 
 const validEnvironment: Record<string, unknown> = {
   POSTGRES_DB: 'industrial_iot',
@@ -81,5 +82,20 @@ describe('health readiness', () => {
       health.readiness(),
       ServiceUnavailableException,
     );
+  });
+});
+
+describe('legacy inventory', () => {
+  it('has unique legacy and integration identifiers', () => {
+    assert.equal(new Set(machines.map(({ legacyId }) => legacyId)).size, 45);
+    assert.equal(new Set(devices.map(({ legacyId }) => legacyId)).size, 40);
+    assert.equal(new Set(machines.map(({ code }) => code)).size, 45);
+    assert.equal(new Set(devices.map(({ code }) => code)).size, 40);
+  });
+
+  it('uses the approved alarm-system integration code', () => {
+    const alarmSystem = machines.find(({ legacyId }) => legacyId === 18);
+
+    assert.equal(alarmSystem?.code, 'AL-01-M');
   });
 });

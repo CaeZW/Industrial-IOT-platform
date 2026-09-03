@@ -105,3 +105,6 @@ is normalized to UTF-8 and repeated whitespace is removed during the seed.
 Integration `code` remains globally unique for Machines and Devices. It may be
 null only for a legacy record that has no valid code yet. Such a record cannot
 participate in MQTT topics until an explicit stable code is assigned.
+
+The approved integration code for legacy Machine 18, `Sistema de Alarmas`, is
+`AL-01-M`.

@@ -16,7 +16,8 @@ implementing speculative business features.
 - liveness and dependency-readiness endpoints;
 - MQTT connection adapter without business ingestion logic;
 - WebSocket transport foundation without business event exposure;
-- Angular 22 application shell consuming only the NestJS health API;
+- Angular 22 + Tailwind CSS application shell consuming only the NestJS health
+  API;
 - lint, strict typecheck, unit tests and production builds.
 
 ### Slice 2 — Read-only equipment catalog
@@ -49,11 +50,12 @@ The import:
 - preserves the legacy integer IDs;
 - normalizes mojibake, accents and repeated whitespace;
 - preserves stable internal codes;
-- maps `N/A` to a missing code instead of treating it as an MQTT identifier;
+- replaces the `N/A` placeholder for `Sistema de Alarmas` with the approved
+  stable code `AL-01-M`;
 - does not turn PLC registers or internal sensors into application Devices.
 
-`Sistema de Alarmas` requires an approved stable integration code before it can
-publish or receive application MQTT messages.
+Technical Device names are preserved as supplied until their owners approve any
+spelling or naming changes.
 
 ## Commands
 

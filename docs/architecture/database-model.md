@@ -114,4 +114,5 @@ only `core.plants`, `core.areas`, `core.machines` and `core.devices`.
 The supplied plant inventory is loaded through an idempotent seed. Legacy
 integer IDs are preserved, while application relations use UUIDs. A missing or
 placeholder integration code is stored as `NULL`, never as `N/A`; that record is
-excluded from MQTT integration until a stable code is assigned.
+excluded from MQTT integration until a stable code is assigned. The supplied
+`Sistema de Alarmas` record now uses the approved stable code `AL-01-M`.

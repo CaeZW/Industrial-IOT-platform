@@ -23,8 +23,11 @@
     "@angular/build": "22.1.7",
     "@angular/cli": "22.1.7",
     "@angular/compiler-cli": "22.1.5",
+    "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.13.3",
     "jsdom": "30.0.1",
+    "postcss": "8.5.28",
+    "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "vitest": "4.1.11"
   }

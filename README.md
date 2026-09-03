@@ -272,7 +272,7 @@ Resolve the conflict explicitly and update the authoritative documentation.
 ## Sprint 1 development
 
 Sprint 0 infrastructure is complete. Sprint 1 now includes the executable
-NestJS and Angular foundations, Prisma integration and the initial core
+NestJS and Angular + Tailwind CSS foundations, Prisma integration and the initial core
 inventory schema. See `docs/development/sprint-1.md` for the delivery slices.
 
 Prepare the local database once:
