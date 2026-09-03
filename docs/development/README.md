@@ -11,3 +11,5 @@ Rules:
 - run relevant checks after application changes.
 
 Current implementation plan: `sprint-1.md`.
+
+Local webapp startup and preview commands: `local-preview.md`.

@@ -28,6 +28,35 @@ implementing speculative business features.
 - Angular feature routes for the equipment catalog;
 - integration tests against the local PostgreSQL container.
 
+Status: implemented and validated locally.
+
+REST endpoints:
+
+```text
+GET /api/catalog/overview
+GET /api/catalog/areas?page=1&pageSize=20&search=
+GET /api/catalog/machines?page=1&pageSize=20&search=&areaId=
+GET /api/catalog/devices?page=1&pageSize=20&search=&areaId=
+```
+
+`pageSize` is limited to 50. Invalid pagination or `areaId` values return HTTP
+400. Prisma is isolated in the catalog infrastructure repository; controllers
+do not access it directly.
+
+Angular routes:
+
+```text
+/
+/catalog
+/catalog/areas
+/catalog/machines
+/catalog/devices
+```
+
+The read-only endpoints are intentionally unauthenticated only during local
+Sprint 1 development. They must be protected by the backend authorization
+foundation before deployment beyond localhost.
+
 ### Slice 3 — Authentication foundation
 
 - local user and credential model;
@@ -91,6 +120,7 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm test:integration
 ```
 
 The production installation at `172.16.201.31` is never used by these commands.

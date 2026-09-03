@@ -4,5 +4,6 @@ export type * from './state.js';
 export type * from './commands.js';
 export type * from './alarms.js';
 export type * from './reports.js';
+export type * from './catalog.js';
 export * from './topics.js';
 export * from './validation.js';

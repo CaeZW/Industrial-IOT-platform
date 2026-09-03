@@ -13,9 +13,11 @@
     "lint": "eslint eslint.config.mjs scripts tests apps/api/src apps/api/test apps/api/prisma apps/api/prisma.config.ts apps/web/src packages/contracts/src --max-warnings 0",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "node --test tests/repository.test.mjs && pnpm -r --if-present test",
+    "test:integration": "pnpm --filter @industrial-iot-platform/api test:integration",
     "build": "pnpm -r --if-present build",
     "db:generate": "pnpm --filter @industrial-iot-platform/api db:generate",
     "db:migrate": "pnpm --filter @industrial-iot-platform/api db:migrate",
+    "db:deploy": "pnpm --filter @industrial-iot-platform/api db:deploy",
     "db:seed": "pnpm --filter @industrial-iot-platform/api db:seed",
     "infra:validate": "node scripts/validate-infrastructure.mjs",
     "infra:validate:start": "node scripts/validate-infrastructure.mjs --start"

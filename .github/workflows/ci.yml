@@ -21,6 +21,10 @@ jobs:
       MQTT_HOST: 127.0.0.1
       MQTT_PORT: 51883
       MQTT_WS_PORT: 59001
+      API_HOST: 127.0.0.1
+      API_PORT: 3000
+      WEB_HOST: 127.0.0.1
+      WEB_PORT: 4200
       NODERED_HOST: 127.0.0.1
       NODERED_PORT: 51880
       NODERED_USERNAME: ci-admin
@@ -65,6 +69,15 @@ jobs:
 
       - name: Start and validate local infrastructure
         run: pnpm infra:validate:start
+
+      - name: Apply application database migrations
+        run: pnpm db:deploy
+
+      - name: Seed development inventory
+        run: pnpm db:seed
+
+      - name: Test PostgreSQL integration
+        run: pnpm test:integration
 
       - name: Stop local infrastructure
         if: always()

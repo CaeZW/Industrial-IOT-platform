@@ -41,3 +41,15 @@ Critical scenarios include:
 - expired command;
 - duplicate command;
 - unauthorized command.
+
+## Sprint 1 database integration
+
+Database integration tests run separately after PostgreSQL is healthy,
+migrations are deployed and development seed data is loaded:
+
+```bash
+pnpm test:integration
+```
+
+The default unit-test command remains independent of Docker so failures keep a
+clear boundary between application logic and local infrastructure.

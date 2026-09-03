@@ -289,14 +289,20 @@ pnpm dev:api
 pnpm dev:web
 ```
 
+Complete Windows/PowerShell preview instructions are documented in
+`docs/development/local-preview.md`.
+
 Local URLs:
 
 ```text
 Angular          http://127.0.0.1:4200
 NestJS liveness  http://127.0.0.1:3000/api/health/live
 NestJS readiness http://127.0.0.1:3000/api/health/ready
+Catalog summary  http://127.0.0.1:4200/catalog
+Machines         http://127.0.0.1:4200/catalog/machines
+Devices          http://127.0.0.1:4200/catalog/devices
 ```
 
-The next slice is the read-only equipment catalog through NestJS REST and
-Angular feature routes. Authentication and MQTT data ingestion follow as
-separate, testable slices.
+The read-only equipment catalog is implemented through NestJS REST and Angular
+feature routes. Authentication and MQTT data ingestion follow as separate,
+testable slices.
