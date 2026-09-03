@@ -1,37 +1,33 @@
 import { Component } from '@angular/core';
-
-import { SystemStatusComponent } from './features/system-status/system-status.component';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [SystemStatusComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   template: `
-    <main
-      class="mx-auto grid min-h-screen w-[min(100%-2rem,56rem)] content-start gap-10 py-12 sm:py-20 lg:py-28"
-    >
-      <section class="max-w-3xl">
-        <p
-          class="mb-3 text-xs font-bold tracking-[0.12em] text-emerald-700 uppercase"
-        >
-          Alcos El Alto · Entorno local
-        </p>
-        <h1
-          class="max-w-[12ch] text-5xl leading-[0.95] font-bold tracking-[-0.06em] text-slate-900 sm:text-7xl lg:text-8xl"
-        >
-          Industrial IoT Platform
-        </h1>
-        <p class="mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-xl">
-          Base de supervisión para máquinas y dispositivos de planta. Angular se
-          comunica exclusivamente con la API NestJS.
-        </p>
-      </section>
+    <header class="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+      <div class="mx-auto flex w-[min(100%-2rem,72rem)] flex-wrap items-center justify-between gap-4 py-4">
+        <a class="font-bold tracking-tight text-slate-900" routerLink="/">
+          Industrial <span class="text-emerald-700">IoT</span>
+        </a>
 
-      <app-system-status />
+        <nav class="flex flex-wrap items-center gap-1 text-sm font-semibold text-slate-600" aria-label="Navegación principal">
+          <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/" routerLinkActive="bg-emerald-50 text-emerald-800" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+          <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog" routerLinkActive="bg-emerald-50 text-emerald-800" [routerLinkActiveOptions]="{ exact: true }">Resumen</a>
+          <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/areas" routerLinkActive="bg-emerald-50 text-emerald-800">Áreas</a>
+          <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/machines" routerLinkActive="bg-emerald-50 text-emerald-800">Máquinas</a>
+          <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/devices" routerLinkActive="bg-emerald-50 text-emerald-800">Dispositivos</a>
+        </nav>
+      </div>
+    </header>
 
-      <footer class="text-sm text-slate-500">
-        Sprint 1 · Fundación de aplicación
-      </footer>
+    <main class="mx-auto min-h-[calc(100vh-9rem)] w-[min(100%-2rem,72rem)] py-10">
+      <router-outlet />
     </main>
+
+    <footer class="mx-auto w-[min(100%-2rem,72rem)] border-t border-slate-200 py-6 text-sm text-slate-500">
+      Sprint 1 · Catálogo de solo lectura · Alcos El Alto
+    </footer>
   `,
 })
 export class AppComponent {}

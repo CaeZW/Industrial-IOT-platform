@@ -10,6 +10,7 @@
     "test": "ng test --watch=false"
   },
   "dependencies": {
+    "@industrial-iot-platform/contracts": "workspace:*",
     "@angular/common": "22.1.5",
     "@angular/compiler": "22.1.5",
     "@angular/core": "22.1.5",
