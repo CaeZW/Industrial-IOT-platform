@@ -40,3 +40,6 @@ configuration required before plant deployment. The Sprint 0 broker is
 anonymous only on loopback; the variables do not imply that local authentication
 is active. See `docs/security/deployment-gate.md`.
 Document variable names here instead.
+
+Prisma and NestJS construct the local PostgreSQL connection from these existing
+`POSTGRES_*` values. No separate `DATABASE_URL` is required.

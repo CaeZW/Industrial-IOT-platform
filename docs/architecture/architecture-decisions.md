@@ -74,3 +74,34 @@ without exposing the database to the LAN.
 
 Node-RED remains isolated because it is not attached to `application-data`.
 Production removes the PostgreSQL host port and uses an internal data network.
+
+## ADR-017 — Prisma as the PostgreSQL infrastructure adapter
+
+Sprint 1 uses Prisma 7.10 as the only ORM/data-access adapter in NestJS.
+Prisma belongs to the infrastructure layer: controllers and application use
+cases must not import the generated client directly. This preserves the option
+to use explicit repository ports and focused SQL where a measured query requires
+it, without introducing another ORM or data-access library.
+
+The Prisma connection URL is assembled from the existing local `POSTGRES_*`
+variables. The project does not duplicate the database password in a committed
+file or require a second secret variable.
+
+## ADR-018 — Minimal Sprint 1 core schema and legacy inventory
+
+The first migration implements only the approved hierarchy:
+
+```text
+Plant
+└── Area
+    ├── Machine
+    └── Device
+```
+
+Application identifiers are UUIDs. Legacy integer identifiers are retained in
+dedicated unique columns for traceability and idempotent imports. Display text
+is normalized to UTF-8 and repeated whitespace is removed during the seed.
+
+Integration `code` remains globally unique for Machines and Devices. It may be
+null only for a legacy record that has no valid code yet. Such a record cannot
+participate in MQTT topics until an explicit stable code is assigned.

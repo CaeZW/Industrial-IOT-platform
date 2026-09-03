@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 coverage/
+apps/api/src/generated/
 .angular/
 .cache/
 
@@ -25,6 +26,7 @@ coverage/
 *.tmp
 *.temp
 *.cache
+*.tsbuildinfo
 
 # IDE
 .vscode/*

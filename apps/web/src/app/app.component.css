@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+main {
+  display: grid;
+  width: min(100% - 2rem, 56rem);
+  min-height: 100vh;
+  margin-inline: auto;
+  padding-block: clamp(3rem, 9vw, 7rem) 2rem;
+  align-content: start;
+  gap: 2.5rem;
+}
+
+.hero {
+  max-width: 48rem;
+}
+
+.kicker {
+  margin: 0 0 0.75rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-size: clamp(2.75rem, 9vw, 5.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.intro {
+  max-width: 43rem;
+  margin: 1.5rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  line-height: 1.65;
+}
+
+footer {
+  color: var(--muted);
+  font-size: 0.85rem;
+}

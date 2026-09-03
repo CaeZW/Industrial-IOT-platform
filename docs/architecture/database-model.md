@@ -73,8 +73,8 @@ Do not add a table for every machine-specific form.
 
 - primary keys are application UUIDs;
 - `plants.code` is globally unique and `areas.code` is unique within a Plant;
-- `machines.code` and `devices.code` are globally unique because their values
-  occupy global MQTT topic namespaces;
+- `machines.code` and `devices.code`, when present, are globally unique because
+  their values occupy global MQTT topic namespaces;
 - MQTT machine/device identifiers use the corresponding stable `code`;
 - `measurement_definitions` belongs to exactly one Machine or one Device,
   enforced with an exclusive-owner check constraint;
@@ -105,3 +105,13 @@ and expiry lookup, and audit lookup by occurrence time and user.
 
 Detailed SQL and ORM migrations belong to Sprint 1. Sprint 0 defines these
 invariants without creating an application schema prematurely.
+
+## Sprint 1 implementation baseline
+
+Prisma is the PostgreSQL infrastructure adapter. The initial migration creates
+only `core.plants`, `core.areas`, `core.machines` and `core.devices`.
+
+The supplied plant inventory is loaded through an idempotent seed. Legacy
+integer IDs are preserved, while application relations use UUIDs. A missing or
+placeholder integration code is stored as `NULL`, never as `N/A`; that record is
+excluded from MQTT integration until a stable code is assigned.

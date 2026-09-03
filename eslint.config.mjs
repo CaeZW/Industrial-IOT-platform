@@ -3,7 +3,12 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/node_modules/**'],
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/.angular/**',
+      'apps/api/src/generated/**',
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
@@ -19,7 +24,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/contracts/src/**/*.ts'],
+    files: [
+      'packages/contracts/src/**/*.ts',
+      'apps/api/**/*.ts',
+      'apps/web/**/*.ts',
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -29,6 +38,12 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/consistent-type-exports': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+    },
+  },
+  {
+    files: ['apps/web/src/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-extraneous-class': 'off',
     },
   },
 );

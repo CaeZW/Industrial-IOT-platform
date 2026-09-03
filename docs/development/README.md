@@ -9,3 +9,5 @@ Rules:
 - keep `.env` uncommitted;
 - prefer small vertical changes;
 - run relevant checks after application changes.
+
+Current implementation plan: `sprint-1.md`.

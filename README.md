@@ -1,4 +1,4 @@
-# Industrial IoT Platform — Sprint 0
+# Industrial IoT Platform
 
 On-premise Industrial IoT platform for machine monitoring, data acquisition,
 historian, alarms, commands, production, reports, maintenance, energy and
@@ -269,25 +269,34 @@ implementation
 If documents conflict, do not silently choose a different architecture.
 Resolve the conflict explicitly and update the authoritative documentation.
 
-## Current next phase
+## Sprint 1 development
 
-The infrastructure is complete.
+Sprint 0 infrastructure is complete. Sprint 1 now includes the executable
+NestJS and Angular foundations, Prisma integration and the initial core
+inventory schema. See `docs/development/sprint-1.md` for the delivery slices.
 
-The next implementation phase is:
+Prepare the local database once:
 
-```text
-Sprint 1
-NestJS foundation
-+
-Angular foundation
-+
-PostgreSQL integration
-+
-MQTT adapter
-+
-WebSocket foundation
-+
-authentication foundation
+```bash
+pnpm db:migrate
+pnpm db:seed
 ```
 
-Business features are then implemented incrementally.
+Run the applications in separate terminals:
+
+```bash
+pnpm dev:api
+pnpm dev:web
+```
+
+Local URLs:
+
+```text
+Angular          http://127.0.0.1:4200
+NestJS liveness  http://127.0.0.1:3000/api/health/live
+NestJS readiness http://127.0.0.1:3000/api/health/ready
+```
+
+The next slice is the read-only equipment catalog through NestJS REST and
+Angular feature routes. Authentication and MQTT data ingestion follow as
+separate, testable slices.

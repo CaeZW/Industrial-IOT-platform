@@ -1,0 +1,69 @@
+.status-card {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  box-shadow: 0 1.5rem 4rem rgb(10 25 47 / 9%);
+}
+
+.status-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+}
+
+.status-dot {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: #d3912c;
+  box-shadow: 0 0 0 0.45rem rgb(211 145 44 / 15%);
+}
+
+.status-dot[data-status='ready'] {
+  background: #1f9860;
+  box-shadow: 0 0 0 0.45rem rgb(31 152 96 / 15%);
+}
+
+.status-dot[data-status='unavailable'] {
+  background: #c84d4d;
+  box-shadow: 0 0 0 0.45rem rgb(200 77 77 / 15%);
+}
+
+button {
+  justify-self: start;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0.7rem;
+  color: #fff;
+  background: var(--ink);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}

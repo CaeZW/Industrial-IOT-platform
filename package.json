@@ -8,10 +8,15 @@
     "pnpm": ">=11 <12"
   },
   "scripts": {
-    "lint": "eslint eslint.config.mjs scripts tests packages/contracts/src --max-warnings 0",
-    "typecheck": "pnpm --filter @industrial-iot-platform/contracts typecheck",
-    "test": "node --test tests/repository.test.mjs && pnpm --filter @industrial-iot-platform/contracts test",
-    "build": "pnpm --filter @industrial-iot-platform/contracts build",
+    "dev:api": "pnpm --filter @industrial-iot-platform/api dev",
+    "dev:web": "pnpm --filter @industrial-iot-platform/web dev",
+    "lint": "eslint eslint.config.mjs scripts tests apps/api/src apps/api/test apps/api/prisma apps/api/prisma.config.ts apps/web/src packages/contracts/src --max-warnings 0",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "node --test tests/repository.test.mjs && pnpm -r --if-present test",
+    "build": "pnpm -r --if-present build",
+    "db:generate": "pnpm --filter @industrial-iot-platform/api db:generate",
+    "db:migrate": "pnpm --filter @industrial-iot-platform/api db:migrate",
+    "db:seed": "pnpm --filter @industrial-iot-platform/api db:seed",
     "infra:validate": "node scripts/validate-infrastructure.mjs",
     "infra:validate:start": "node scripts/validate-infrastructure.mjs --start"
   },
