@@ -29,6 +29,8 @@ permissions
 user_roles
 role_permissions
 user_scopes
+sessions
+login_windows
 ```
 
 ## Operations
@@ -116,3 +118,7 @@ integer IDs are preserved, while application relations use UUIDs. A missing or
 placeholder integration code is stored as `NULL`, never as `N/A`; that record is
 excluded from MQTT integration until a stable code is assigned. The supplied
 `Sistema de Alarmas` record now uses the approved stable code `AL-01-M`.
+
+Slice 3 adds `iam` and `audit` schemas. Sessions store token hashes and separate
+absolute/idle timestamps. Login windows store hashed throttle keys, never raw
+passwords or tokens. Roles/permissions and resource scopes remain relational.

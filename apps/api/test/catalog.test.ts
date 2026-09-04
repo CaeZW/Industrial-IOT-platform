@@ -63,7 +63,7 @@ describe('catalog application service', () => {
     const service = new CatalogService(repository);
     const query = { page: 1, pageSize: 20, search: 'UTA' };
 
-    await service.listMachines(query);
+    await service.listMachines(query, { scopes: [], permissions: [] });
 
     assert.deepEqual(receivedQuery, query);
   });

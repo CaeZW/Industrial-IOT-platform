@@ -2,10 +2,8 @@
 
 ## Authentication
 
-Preferred order:
-
-1. Existing OIDC/SSO identity provider if available.
-2. Local authentication only if required.
+Local username/password authentication is the initial implementation, as
+required by PROJECT_CONTEXT.md. OIDC/SSO remains a future option.
 
 Protected by default.
 

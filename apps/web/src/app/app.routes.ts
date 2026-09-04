@@ -1,8 +1,13 @@
 import type { Routes } from '@angular/router';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
+  { path: 'login', title: 'Acceso · Industrial IoT', loadComponent: () => import('./features/auth/login.component').then((m) => m.LoginComponent) },
+  { path: 'change-password', title: 'Contraseña · Industrial IoT', canActivate: [authGuard], loadComponent: () => import('./features/auth/change-password.component').then((m) => m.ChangePasswordComponent) },
+  { path: 'forbidden', title: 'Acceso restringido', canActivate: [authGuard], loadComponent: () => import('./features/auth/forbidden.component').then((m) => m.ForbiddenComponent) },
   {
     path: '',
+    canActivate: [authGuard],
     title: 'Inicio · Industrial IoT Platform',
     loadComponent: () =>
       import('./features/home/home.component').then(
@@ -14,6 +19,8 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        canActivate: [authGuard],
+        data: { permission: 'page.dashboard.view' },
         title: 'Catálogo · Industrial IoT Platform',
         loadComponent: () =>
           import('./features/catalog/catalog-overview.component').then(
@@ -22,6 +29,8 @@ export const routes: Routes = [
       },
       {
         path: 'areas',
+        canActivate: [authGuard],
+        data: { permission: 'page.dashboard.view' },
         title: 'Áreas · Industrial IoT Platform',
         loadComponent: () =>
           import('./features/catalog/areas-page.component').then(
@@ -30,8 +39,9 @@ export const routes: Routes = [
       },
       {
         path: 'machines',
+        canActivate: [authGuard],
         title: 'Máquinas · Industrial IoT Platform',
-        data: { kind: 'machine' },
+        data: { kind: 'machine', permission: 'page.machines.view' },
         loadComponent: () =>
           import('./features/catalog/equipment-page.component').then(
             ({ EquipmentPageComponent }) => EquipmentPageComponent,
@@ -39,8 +49,9 @@ export const routes: Routes = [
       },
       {
         path: 'devices',
+        canActivate: [authGuard],
         title: 'Dispositivos · Industrial IoT Platform',
-        data: { kind: 'device' },
+        data: { kind: 'device', permission: 'page.devices.view' },
         loadComponent: () =>
           import('./features/catalog/equipment-page.component').then(
             ({ EquipmentPageComponent }) => EquipmentPageComponent,

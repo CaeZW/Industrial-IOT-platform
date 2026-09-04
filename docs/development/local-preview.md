@@ -11,12 +11,19 @@ Open PowerShell in the repository:
 cd "C:\Users\GAIOT-PC\Desktop\IotApp\industrial-iot-platform-sprint-0_V2"
 pnpm install --frozen-lockfile
 docker compose --env-file .env -f infra/compose/compose.yaml up -d --wait
+pnpm db:generate
 pnpm db:deploy
 pnpm db:seed
+pnpm users:init
 ```
 
 `db:deploy` applies the versioned migrations without creating new ones. Use
 `pnpm db:migrate` only while intentionally developing a new Prisma migration.
+
+`users:init` creates missing initial users and delivers temporary passwords in
+a private `.local` file. It never resets existing accounts. Open the generated
+file locally, use your own username/password and replace the temporary password
+at first login. See `user-administration.md` for account commands.
 
 ## 2. Start NestJS
 
@@ -40,6 +47,7 @@ pnpm dev:web
 
 ```text
 Home         http://127.0.0.1:4200/
+Login        http://127.0.0.1:4200/login
 Catalog      http://127.0.0.1:4200/catalog
 Areas        http://127.0.0.1:4200/catalog/areas
 Machines     http://127.0.0.1:4200/catalog/machines
@@ -54,8 +62,11 @@ The browser never connects directly to PostgreSQL or MQTT.
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:3000/api/health/ready
-Invoke-RestMethod http://127.0.0.1:3000/api/catalog/overview
 ```
+
+An unauthenticated request to `/api/catalog/overview` now returns HTTP 401.
+Use the signed-in browser to inspect the catalog. Do not copy browser session
+cookies into shared terminals or documentation.
 
 ## 6. Stop without deleting data
 

@@ -334,6 +334,7 @@ Examples:
 - Sólidos II
 - Sólidos III
 - Semisólidos
+- Estabilidad
 - etc.
 
 Areas must be first-class entities, not only strings.
@@ -983,6 +984,25 @@ The application contains authenticated users.
 Initial architecture should support local authentication.
 
 Future OIDC/SSO can be introduced if required.
+
+Approved Sprint 1 Slice 3 decisions (2026-09-04): login uses username and
+password. All 13 supplied users are initially active. Individually generated
+temporary passwords must be changed at first login. Sessions expire after one
+hour without user interaction or eight hours after login, whichever occurs
+first. Automatic polling and WebSocket traffic do not extend inactivity.
+Administration is initially through audited local commands, not a frontend
+administration page. Implementation details are in
+`docs/security/slice-3-authentication.md`.
+
+Subsequent owner-approved Slice 4 scope replaces terminal-only routine
+administration with a protected Angular administration screen for users,
+existing roles/permissions, password resets and per-equipment persistence
+intervals. Local commands remain recovery tools. Intervals default to five
+minutes and must survive restart because they are editable in the UI; this is
+the explicit requirement for persistent per-resource configuration anticipated
+in section 36. Implementation is pending. See
+`docs/development/slice-4-approved-scope.md` for approved ingestion, machine-run
+heartbeat/recovery rules, administration security requirements and acceptance.
 
 Users:
 
@@ -2118,6 +2138,11 @@ Production / OEE
 ```
 
 Do not implement all modules simultaneously.
+
+The sequence above is a roadmap, not the current delivery numbering. The
+approved application foundation is being delivered through the slices in
+`docs/development/sprint-1.md`. Authentication is Sprint 1 Slice 3, not a new
+Sprint 3; ingestion remains a separate subsequent slice.
 
 ---
 

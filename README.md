@@ -304,5 +304,23 @@ Devices          http://127.0.0.1:4200/catalog/devices
 ```
 
 The read-only equipment catalog is implemented through NestJS REST and Angular
-feature routes. Authentication and MQTT data ingestion follow as separate,
-testable slices.
+feature routes. Sprint 1 Slice 3 adds local authentication, role permissions and
+resource scopes, mandatory initial password replacement, one-hour idle/eight-hour
+absolute sessions, protected WebSocket connections and audited administration
+commands. MQTT data ingestion remains the separate pending Slice 4.
+
+Initialize the supplied accounts once (creates missing users only):
+
+```powershell
+pnpm users:init
+```
+
+Open `http://127.0.0.1:4200/login` and use your personal username and temporary
+password from the private file reported by the command. Credentials never go
+into Git. Full instructions: `docs/development/user-administration.md`.
+
+Create another user interactively:
+
+```powershell
+pnpm users:create
+```

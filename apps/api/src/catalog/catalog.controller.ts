@@ -1,4 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
+import { CurrentSession, RequirePermission } from '../auth/auth.http.js';
+import type { SessionRecord } from '../auth/auth.types.js';
 import type {
   CatalogArea,
   CatalogEquipment,
@@ -24,26 +26,32 @@ export class CatalogController {
   constructor(private readonly catalog: CatalogService) {}
 
   @Get('overview')
-  getOverview(): Promise<CatalogOverview> {
-    return this.catalog.getOverview();
+  @RequirePermission('page.dashboard.view')
+  getOverview(@CurrentSession() session: SessionRecord): Promise<CatalogOverview> {
+    return this.catalog.getOverview(session.user);
   }
 
   @Get('areas')
-  listAreas(@Query() query: CatalogQueryDto): Promise<PageResult<CatalogArea>> {
-    return this.catalog.listAreas(toCatalogQuery(query));
+  @RequirePermission('page.dashboard.view')
+  listAreas(@Query() query: CatalogQueryDto, @CurrentSession() session: SessionRecord): Promise<PageResult<CatalogArea>> {
+    return this.catalog.listAreas(toCatalogQuery(query), session.user);
   }
 
   @Get('machines')
+  @RequirePermission('page.machines.view')
   listMachines(
     @Query() query: CatalogQueryDto,
+    @CurrentSession() session: SessionRecord,
   ): Promise<PageResult<CatalogEquipment>> {
-    return this.catalog.listMachines(toCatalogQuery(query));
+    return this.catalog.listMachines(toCatalogQuery(query), session.user);
   }
 
   @Get('devices')
+  @RequirePermission('page.devices.view')
   listDevices(
     @Query() query: CatalogQueryDto,
+    @CurrentSession() session: SessionRecord,
   ): Promise<PageResult<CatalogEquipment>> {
-    return this.catalog.listDevices(toCatalogQuery(query));
+    return this.catalog.listDevices(toCatalogQuery(query), session.user);
   }
 }

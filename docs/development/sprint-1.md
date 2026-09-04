@@ -53,9 +53,9 @@ Angular routes:
 /catalog/devices
 ```
 
-The read-only endpoints are intentionally unauthenticated only during local
-Sprint 1 development. They must be protected by the backend authorization
-foundation before deployment beyond localhost.
+The read-only endpoints now require an authenticated session, the corresponding
+permission and authorized resource scopes. Filtering applies before pagination
+and counting, including summary and area totals.
 
 ### Slice 3 — Authentication foundation
 
@@ -64,7 +64,38 @@ foundation before deployment beyond localhost.
 - guarded REST and WebSocket boundaries;
 - audit of authentication failures.
 
+Status: implemented and validated locally. The approved scope also includes
+the supplied role/action/area matrix, all 13 active accounts, mandatory initial
+password replacement, one-hour idle/eight-hour absolute sessions and audited
+local user-administration commands. No administration page or physical command
+endpoint is included.
+
+See `user-administration.md` for exact commands and credential delivery, and
+`../security/slice-3-authentication.md` for security decisions. Initialization is
+separate from inventory seeding and never resets existing users.
+
+REST authentication endpoints:
+
+```text
+POST /api/auth/login
+GET  /api/auth/me
+POST /api/auth/activity
+POST /api/auth/password
+POST /api/auth/logout
+```
+
+Angular adds `/login`, `/change-password` and `/forbidden`; existing catalog
+routes are guarded. WebSocket connections require a trusted origin and a valid
+session after initial password replacement. No business events are exposed yet.
+
 ### Slice 4 — Data ingestion foundation
+
+Status: pending; explicitly outside the Slice 3 closure.
+
+The owner subsequently expanded this slice to include administrative UI,
+per-equipment persistence settings and machine-run/recovery behavior. The
+approved requirements and manual-entry permission assignments are in
+`slice-4-approved-scope.md`. This scope is not yet implemented.
 
 - controlled MQTT subscriptions for Machine and Device data topics;
 - shared-contract validation at the boundary;
@@ -76,6 +107,9 @@ foundation before deployment beyond localhost.
 The 45 Machines and 40 Devices supplied for Sprint 1 are development seed data.
 The import:
 
+- creates 12 Areas, including `Estabilidad` as an Area separate from
+  `Control de calidad`;
+- assigns `Estabilidad1` through `Estabilidad12` to the `Estabilidad` Area;
 - preserves the legacy integer IDs;
 - normalizes mojibake, accents and repeated whitespace;
 - preserves stable internal codes;

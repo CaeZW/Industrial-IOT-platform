@@ -8,6 +8,9 @@
     "pnpm": ">=11 <12"
   },
   "scripts": {
+    "users": "pnpm --filter @industrial-iot-platform/api users",
+    "users:init": "pnpm users init",
+    "users:create": "pnpm users create",
     "dev:api": "pnpm --filter @industrial-iot-platform/api dev",
     "dev:web": "pnpm --filter @industrial-iot-platform/web dev",
     "lint": "eslint eslint.config.mjs scripts tests apps/api/src apps/api/test apps/api/prisma apps/api/prisma.config.ts apps/web/src packages/contracts/src --max-warnings 0",

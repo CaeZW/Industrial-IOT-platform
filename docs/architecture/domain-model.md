@@ -15,6 +15,9 @@ Device = independently monitored/data-producing device.
 
 Do not model every physical sensor/register as an application Device.
 
+`Estabilidad` and `Control de calidad` are separate Areas. The seeded Devices
+`Estabilidad1` through `Estabilidad12` belong to the `Estabilidad` Area.
+
 Machine-specific internal values are represented as JSONB process data.
 
 Optional `measurement_definitions` gives machine/device variables readable names,

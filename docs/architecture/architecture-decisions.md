@@ -108,3 +108,25 @@ participate in MQTT topics until an explicit stable code is assigned.
 
 The approved integration code for legacy Machine 18, `Sistema de Alarmas`, is
 `AL-01-M`.
+
+## ADR-019 — Estabilidad is an independent Area
+
+`Estabilidad` is modeled as a first-class Area under `Alcos El Alto`, separate
+from `Control de calidad`. The 12 independently monitored temperature and
+humidity Devices named `Estabilidad1` through `Estabilidad12` belong to this
+new Area.
+
+`Control de calidad` remains in the area catalog even when it has no seeded
+Devices. This is an inventory relationship correction and does not introduce a
+new entity or change the approved Plant → Area → Machine/Device hierarchy.
+
+## ADR-020 — Local authentication and PostgreSQL sessions
+
+Sprint 1 Slice 3 adds the already planned IAM and audit models, plus opaque
+revocable sessions and persistent login-attempt windows in the existing
+PostgreSQL instance. No Redis, identity service or additional container is
+required. Details and approved policies: `../security/slice-3-authentication.md`.
+Prisma remains infrastructure; HTTP controllers and CLI delegate to application
+services. Initial credentials are delivered locally outside Git, not baked into
+the seed. Revoke sessions on security changes. Rollback disables application
+access and returns to localhost-only development; do not drop IAM/audit data.

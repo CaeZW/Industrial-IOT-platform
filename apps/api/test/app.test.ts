@@ -10,7 +10,7 @@ import {
 import type { PrismaService } from '../src/database/prisma.service.js';
 import { HealthService } from '../src/health/health.service.js';
 import type { MqttConnectionService } from '../src/messaging/mqtt-connection.service.js';
-import { devices, machines } from '../prisma/seed-data.js';
+import { areas, devices, machines } from '../prisma/seed-data.js';
 
 const validEnvironment: Record<string, unknown> = {
   POSTGRES_DB: 'industrial_iot',
@@ -87,6 +87,9 @@ describe('health readiness', () => {
 
 describe('legacy inventory', () => {
   it('has unique legacy and integration identifiers', () => {
+    assert.equal(areas.length, 12);
+    assert.equal(new Set(areas.map(({ code }) => code)).size, 12);
+    assert.equal(new Set(areas.map(({ name }) => name)).size, 12);
     assert.equal(new Set(machines.map(({ legacyId }) => legacyId)).size, 45);
     assert.equal(new Set(devices.map(({ legacyId }) => legacyId)).size, 40);
     assert.equal(new Set(machines.map(({ code }) => code)).size, 45);
@@ -97,5 +100,17 @@ describe('legacy inventory', () => {
     const alarmSystem = machines.find(({ legacyId }) => legacyId === 18);
 
     assert.equal(alarmSystem?.code, 'AL-01-M');
+  });
+
+  it('assigns every stability device to the Stability area', () => {
+    const stabilityDevices = devices.filter(({ name }) =>
+      name.startsWith('Estabilidad'),
+    );
+
+    assert.equal(stabilityDevices.length, 12);
+    assert.equal(
+      stabilityDevices.every(({ area }) => area === 'Estabilidad'),
+      true,
+    );
   });
 });

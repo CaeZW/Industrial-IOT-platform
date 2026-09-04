@@ -9,8 +9,10 @@ coverage/
 apps/api/src/generated/
 .angular/
 .cache/
+.tools/
 
 # Environment / secrets
+.local/
 .env
 .env.*
 

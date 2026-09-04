@@ -27,6 +27,7 @@ API_PORT
 
 WEB_HOST
 WEB_PORT
+AUTH_WEB_ORIGIN (optional; defaults to http://WEB_HOST:WEB_PORT)
 
 TZ
 ```
@@ -43,3 +44,9 @@ Document variable names here instead.
 
 Prisma and NestJS construct the local PostgreSQL connection from these existing
 `POSTGRES_*` values. No separate `DATABASE_URL` is required.
+
+`AUTH_WEB_ORIGIN` is the exact browser origin, without a trailing slash. Local
+development supports the configured port on localhost/127.0.0.1. Non-loopback
+origins require HTTPS; cookie Secure follows that origin. The existing
+deployment security gate remains mandatory. No JWT signing secret is needed:
+sessions use opaque random tokens with digests stored in PostgreSQL.

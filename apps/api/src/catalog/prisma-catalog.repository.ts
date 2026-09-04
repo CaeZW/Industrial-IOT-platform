@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import type { CatalogAccess } from './catalog-access.js';
+import { scopeFilters } from './prisma-scope-filters.js';
 import type {
   CatalogArea,
   CatalogEquipment,
@@ -34,15 +36,18 @@ export class PrismaCatalogRepository extends CatalogRepository {
     super();
   }
 
-  async getOverview(): Promise<CatalogOverview> {
+  async getOverview(access: CatalogAccess): Promise<CatalogOverview> {
+    const scope = scopeFilters(access);
     const [plants, areas] = await Promise.all([
       this.prisma.plant.findMany({
+        where: scope.plant,
         orderBy: { name: 'asc' },
       }),
       this.prisma.area.findMany({
+        where: scope.area,
         select: {
           plantId: true,
-          _count: { select: { machines: true, devices: true } },
+          _count: { select: scope.count },
         },
       }),
     ]);
@@ -99,8 +104,9 @@ export class PrismaCatalogRepository extends CatalogRepository {
     };
   }
 
-  async listAreas(query: CatalogQuery): Promise<PageResult<CatalogArea>> {
-    const where: Prisma.AreaWhereInput = this.areaWhere(query.search);
+  async listAreas(query: CatalogQuery, access: CatalogAccess): Promise<PageResult<CatalogArea>> {
+    const scope = scopeFilters(access);
+    const where: Prisma.AreaWhereInput = { AND: [this.areaWhere(query.search), scope.area] };
     const [items, totalItems] = await Promise.all([
       this.prisma.area.findMany({
         where,
@@ -109,7 +115,7 @@ export class PrismaCatalogRepository extends CatalogRepository {
         orderBy: [{ name: 'asc' }, { id: 'asc' }],
         include: {
           plant: { select: { id: true, code: true, name: true } },
-          _count: { select: { machines: true, devices: true } },
+          _count: { select: scope.count },
         },
       }),
       this.prisma.area.count({ where }),
@@ -131,8 +137,9 @@ export class PrismaCatalogRepository extends CatalogRepository {
 
   async listMachines(
     query: CatalogQuery,
+    access: CatalogAccess,
   ): Promise<PageResult<CatalogEquipment>> {
-    const where: Prisma.MachineWhereInput = this.equipmentWhere(query);
+    const where: Prisma.MachineWhereInput = { AND: [this.equipmentWhere(query), scopeFilters(access).machine] };
     const [items, totalItems] = await Promise.all([
       this.prisma.machine.findMany({
         where,
@@ -154,8 +161,9 @@ export class PrismaCatalogRepository extends CatalogRepository {
 
   async listDevices(
     query: CatalogQuery,
+    access: CatalogAccess,
   ): Promise<PageResult<CatalogEquipment>> {
-    const where: Prisma.DeviceWhereInput = this.equipmentWhere(query);
+    const where: Prisma.DeviceWhereInput = { AND: [this.equipmentWhere(query), scopeFilters(access).device] };
     const [items, totalItems] = await Promise.all([
       this.prisma.device.findMany({
         where,

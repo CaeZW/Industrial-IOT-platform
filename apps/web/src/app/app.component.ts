@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AuthService } from './core/auth/auth.service';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -11,17 +12,30 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
           Industrial <span class="text-emerald-700">IoT</span>
         </a>
 
+        @if (auth.session(); as session) {
         <nav class="flex flex-wrap items-center gap-1 text-sm font-semibold text-slate-600" aria-label="Navegación principal">
+          @if (!session.user.mustChangePassword) {
           <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/" routerLinkActive="bg-emerald-50 text-emerald-800" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+          @if (auth.has('page.dashboard.view')) {
           <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog" routerLinkActive="bg-emerald-50 text-emerald-800" [routerLinkActiveOptions]="{ exact: true }">Resumen</a>
           <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/areas" routerLinkActive="bg-emerald-50 text-emerald-800">Áreas</a>
+          }
+          @if (auth.has('page.machines.view')) {
           <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/machines" routerLinkActive="bg-emerald-50 text-emerald-800">Máquinas</a>
+          }
+          @if (auth.has('page.devices.view')) {
           <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/devices" routerLinkActive="bg-emerald-50 text-emerald-800">Dispositivos</a>
+          }
+          }
+          <a class="rounded-lg px-3 py-2 text-emerald-800" routerLink="/change-password">{{ session.user.username }}</a>
+          <button class="rounded-lg border border-slate-300 px-3 py-2" type="button" (click)="auth.logout()">Salir</button>
         </nav>
+        }
       </div>
     </header>
 
     <main class="mx-auto min-h-[calc(100vh-9rem)] w-[min(100%-2rem,72rem)] py-10">
+      @if (auth.session() && auth.notice()) { <p role="alert" class="mb-4 rounded-xl bg-amber-50 p-4 text-amber-900">{{ auth.notice() }}</p> }
       <router-outlet />
     </main>
 
@@ -30,4 +44,4 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     </footer>
   `,
 })
-export class AppComponent {}
+export class AppComponent { readonly auth = inject(AuthService); }

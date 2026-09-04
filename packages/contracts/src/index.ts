@@ -7,3 +7,4 @@ export type * from './reports.js';
 export type * from './catalog.js';
 export * from './topics.js';
 export * from './validation.js';
+export type { AuthSession, AuthUser, ResourceScope, ResourceScopeType } from './auth.js';

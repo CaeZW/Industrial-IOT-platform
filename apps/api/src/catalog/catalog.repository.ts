@@ -4,6 +4,7 @@ import type {
   CatalogOverview,
   PageResult,
 } from '@industrial-iot-platform/contracts';
+import type { CatalogAccess } from './catalog-access.js';
 
 export interface CatalogQuery {
   readonly areaId?: string;
@@ -13,12 +14,14 @@ export interface CatalogQuery {
 }
 
 export abstract class CatalogRepository {
-  abstract getOverview(): Promise<CatalogOverview>;
-  abstract listAreas(query: CatalogQuery): Promise<PageResult<CatalogArea>>;
+  abstract getOverview(access: CatalogAccess): Promise<CatalogOverview>;
+  abstract listAreas(query: CatalogQuery, access: CatalogAccess): Promise<PageResult<CatalogArea>>;
   abstract listDevices(
     query: CatalogQuery,
+    access: CatalogAccess,
   ): Promise<PageResult<CatalogEquipment>>;
   abstract listMachines(
     query: CatalogQuery,
+    access: CatalogAccess,
   ): Promise<PageResult<CatalogEquipment>>;
 }

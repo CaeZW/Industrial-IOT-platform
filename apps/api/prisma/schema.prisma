@@ -6,7 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["core"]
+  schemas  = ["core", "iam", "audit"]
 }
 
 model Plant {
@@ -76,4 +76,129 @@ model Device {
   @@index([areaId])
   @@map("devices")
   @@schema("core")
+}
+
+model User {
+  id                 String      @id @default(uuid()) @db.Uuid
+  username           String      @unique @db.VarChar(64)
+  name               String      @db.VarChar(160)
+  email              String?     @db.VarChar(254)
+  passwordHash       String      @map("password_hash") @db.Text
+  mustChangePassword Boolean     @default(true) @map("must_change_password")
+  isActive           Boolean     @default(true) @map("is_active")
+  securityVersion    Int         @default(0) @map("security_version")
+  createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  roles              UserRole[]
+  scopes             UserScope[]
+  sessions           Session[]
+
+  @@map("users")
+  @@schema("iam")
+}
+
+model Role {
+  code        String           @id @db.VarChar(64)
+  name        String           @db.VarChar(100)
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+  @@schema("iam")
+}
+
+model Permission {
+  code  String           @id @db.VarChar(100)
+  roles RolePermission[]
+
+  @@map("permissions")
+  @@schema("iam")
+}
+
+model UserRole {
+  userId   String @map("user_id") @db.Uuid
+  roleCode String @map("role_code") @db.VarChar(64)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     Role   @relation(fields: [roleCode], references: [code], onDelete: Restrict)
+
+  @@id([userId, roleCode])
+  @@map("user_roles")
+  @@schema("iam")
+}
+
+model RolePermission {
+  roleCode       String     @map("role_code") @db.VarChar(64)
+  permissionCode String     @map("permission_code") @db.VarChar(100)
+  role           Role       @relation(fields: [roleCode], references: [code], onDelete: Cascade)
+  permission     Permission @relation(fields: [permissionCode], references: [code], onDelete: Restrict)
+
+  @@id([roleCode, permissionCode])
+  @@map("role_permissions")
+  @@schema("iam")
+}
+
+enum ScopeType {
+  PLANT
+  AREA
+  MACHINE
+  DEVICE
+
+  @@schema("iam")
+}
+
+model UserScope {
+  userId     String    @map("user_id") @db.Uuid
+  type       ScopeType
+  resourceId String    @map("resource_id") @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, type, resourceId])
+  @@map("user_scopes")
+  @@schema("iam")
+}
+
+model Session {
+  tokenHash       String   @id @map("token_hash") @db.VarChar(64)
+  userId          String   @map("user_id") @db.Uuid
+  securityVersion Int      @map("security_version")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  expiresAt       DateTime @map("expires_at") @db.Timestamptz(3)
+  lastActivityAt  DateTime @map("last_activity_at") @db.Timestamptz(3)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+  @@schema("iam")
+}
+
+model LoginWindow {
+  key       String   @id @db.VarChar(64)
+  attempts  Int      @default(1)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+
+  @@index([expiresAt])
+  @@map("login_windows")
+  @@schema("iam")
+}
+
+model AuditEvent {
+  metadata      Json     @default("{}") @db.JsonB
+  id            String   @id @default(uuid()) @db.Uuid
+  occurredAt    DateTime @default(now()) @map("occurred_at") @db.Timestamptz(3)
+  userId        String?  @map("user_id") @db.Uuid
+  actor         String   @db.VarChar(160)
+  action        String   @db.VarChar(100)
+  resourceType  String   @map("resource_type") @db.VarChar(64)
+  resourceId    String?  @map("resource_id") @db.VarChar(100)
+  result        String   @db.VarChar(32)
+  reason        String   @db.VarChar(160)
+  sourceIp      String?  @map("source_ip") @db.VarChar(64)
+  userAgent     String?  @map("user_agent") @db.VarChar(300)
+  correlationId String   @map("correlation_id") @db.Uuid
+
+  @@index([occurredAt(sort: Desc)])
+  @@index([userId, occurredAt(sort: Desc)])
+  @@map("audit_events")
+  @@schema("audit")
 }

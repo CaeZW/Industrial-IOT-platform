@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { HealthModule } from './health/health.module.js';
 import { MessagingModule } from './messaging/messaging.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RealtimeModule } from './realtime/realtime.module.js';
       validate: validateEnvironment,
     }),
     DatabaseModule,
+    AuthModule,
     CatalogModule,
     MessagingModule,
     HealthModule,

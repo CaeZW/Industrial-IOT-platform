@@ -12,6 +12,9 @@ equipment, all of the following are mandatory:
 - enable TLS when required by the network threat model;
 - use a PostgreSQL migration role separate from the least-privilege API role;
 - replace development credentials and verify that no secret is present in Git;
+- serve browser/API through HTTPS, configure the exact `AUTH_WEB_ORIGIN`, verify
+  Secure cookies and trusted origins, and never expose the local administration
+  command or its credential-delivery directory as a public service;
 - protect Node-RED administration and disable unused HTTP endpoints;
 - validate firewall rules and network segmentation;
 - test expiry, idempotency and authorization of commands with simulators;
