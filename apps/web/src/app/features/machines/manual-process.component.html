@@ -1,0 +1,37 @@
+@if (canWrite() && machine().registrationMode === 'MANUAL') {
+  <section aria-label="Registro manual" class="my-6 rounded-xl border border-emerald-200 bg-white p-5">
+    <h2 class="text-xl font-bold">Registro manual del proceso</h2>
+    <p class="mt-2 text-sm text-slate-600">Primero registra el control de horas completo. Después guarda todos los parámetros. Esto no opera físicamente la máquina.</p>
+    <p class="mt-1 text-sm text-slate-600">Responsable: {{ auth.session()?.user?.name }}. Las horas se interpretan en la zona horaria del navegador y se almacenan en UTC.</p>
+    @if (message()) { <p role="status" class="my-3 rounded-lg bg-emerald-50 p-3 text-emerald-900">{{ message() }}</p> }
+    @if (error()) { <p role="alert" class="my-3 rounded-lg bg-red-50 p-3 text-red-800">{{ error() }}</p> }
+    @if (pending()) {
+      <p class="my-3 text-amber-900">No se confirmó la respuesta. Reintenta el mismo registro para evitar duplicados.</p>
+      <button class="rounded-lg bg-emerald-800 px-4 py-3 text-white" [disabled]="busy()" (click)="retry()">Reintentar el mismo registro</button>
+    } @else if (!selectedRun()) {
+      <fieldset [disabled]="busy()" class="mt-5"><legend class="font-bold">1. Control de horas</legend>
+        <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label>Fecha inicio<input class="mt-1 w-full rounded border p-2" type="date" [(ngModel)]="startDate"></label>
+          <label>Hora inicio<input class="mt-1 w-full rounded border p-2" type="time" step="1" [(ngModel)]="startTime"></label>
+          <label>Fecha parada<input class="mt-1 w-full rounded border p-2" type="date" [(ngModel)]="finishDate"></label>
+          <label>Hora parada<input class="mt-1 w-full rounded border p-2" type="time" step="1" [(ngModel)]="finishTime"></label>
+        </div><button class="mt-4 rounded-lg bg-emerald-800 px-4 py-3 font-semibold text-white" (click)="submitControl()">Guardar control de horas</button>
+      </fieldset>
+    } @else if (selectedRun()?.readingCount) {
+      <div class="mt-5 rounded-lg bg-slate-50 p-4"><p class="font-semibold">Este control ya tiene su registro completo de parámetros.</p><button class="mt-2 text-emerald-800 underline" (click)="clearRun()">Registrar otro control</button></div>
+    } @else {
+      <fieldset [disabled]="busy()" class="mt-5 space-y-3"><legend class="font-bold">2. Registro de parámetros</legend>
+        <p class="text-sm">Control: {{ selectedRun()?.startedAt }} → {{ selectedRun()?.finishedAt }}</p>
+        @for (field of fields; track field.key) {
+          <label class="block rounded-lg bg-slate-50 p-3"><span class="font-semibold">{{ field.label }}</span> <code class="text-xs">{{ field.key }}</code>
+            @if (field.type === 'boolean') { <select class="mt-1 w-full rounded border bg-white p-2" [(ngModel)]="field.value"><option value="">Seleccionar</option><option value="true">Sí</option><option value="false">No</option></select> }
+            @else { <input class="mt-1 w-full rounded border bg-white p-2" [type]="field.type === 'number' ? 'number' : 'text'" step="any" [(ngModel)]="field.value"> }
+          </label>
+        }
+        <button class="rounded-lg bg-emerald-800 px-4 py-3 font-semibold text-white" (click)="submitReading()">Guardar registro completo</button>
+        <button class="ml-3 rounded-lg border px-4 py-3" (click)="clearRun()">Cancelar</button>
+      </fieldset>
+    }
+    @if (busy()) { <p role="status" class="mt-3">Guardando…</p> }
+  </section>
+}

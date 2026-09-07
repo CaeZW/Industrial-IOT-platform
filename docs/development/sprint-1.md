@@ -90,12 +90,23 @@ session after initial password replacement. No business events are exposed yet.
 
 ### Slice 4 — Data ingestion foundation
 
-Status: pending; explicitly outside the Slice 3 closure.
+Status: 4A–4F implemented and verified locally. Sprint 1 foundation closed within
+the approved scope; production integration, PDFs and physical commands remain outside it.
 
 The owner subsequently expanded this slice to include administrative UI,
 per-equipment persistence settings and machine-run/recovery behavior. The
 approved requirements and manual-entry permission assignments are in
-`slice-4-approved-scope.md`. This scope is not yet implemented.
+`slice-4-approved-scope.md`. Subdeliveries 4A (administration UI) and 4B
+(per-equipment persisted configuration) are implemented. 4C device ingestion,
+JSONB history, scoped realtime and local simulation are implemented; see
+`device-ingestion.md`. 4D machine ingestion, linked process readings, operating
+runs, durable heartbeat recovery and the machine dashboard are implemented; see
+`machine-ingestion.md`. 4E adds two-step manual forms: a complete start/stop
+date-time interval followed by one machine-specific JSONB reading, with responsible
+users and immediate audited persistence. 4F verifies the full local journeys,
+including permission/scope denial, retries, restart and database rollback; see
+`manual-processes.md` for evidence and a reproducible acceptance walkthrough.
+Administration instructions: `administration-ui.md`.
 
 - controlled MQTT subscriptions for Machine and Device data topics;
 - shared-contract validation at the boundary;

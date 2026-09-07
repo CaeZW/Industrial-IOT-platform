@@ -1000,7 +1000,23 @@ existing roles/permissions, password resets and per-equipment persistence
 intervals. Local commands remain recovery tools. Intervals default to five
 minutes and must survive restart because they are editable in the UI; this is
 the explicit requirement for persistent per-resource configuration anticipated
-in section 36. Implementation is pending. See
+in section 36. Subdeliveries 4A (administration UI) and 4B (persistent equipment
+settings) are implemented. 4C device MQTT ingestion, JSONB history, scoped realtime
+and local simulation are implemented. 4D machine ingestion, linked JSONB process
+readings, operating runs, durable heartbeat recovery and a read-only machine
+dashboard are implemented; see `docs/development/machine-ingestion.md`.
+4E adds two-step manual process forms. The user first records the complete
+start/stop date-time interval and then one complete machine-specific JSONB
+reading. Responsible users, transactional audit and durable idempotency are
+preserved. Approved roles ADMINISTRATOR, SUPERVISOR and MAINTENANCE require
+explicit manual permissions and machine scope. Manual runs are completed when
+created and do not use MQTT heartbeats or automatic closure. Manual definitions
+are JSONB metadata; automatic incoming keys remain dynamic and unrestricted.
+4F verifies complete local journeys, permissions, failures and stored data.
+The Sprint 1 foundation is complete within this scope, not a production approval
+or completion of reports/physical commands. See `docs/development/manual-processes.md`.
+See `docs/development/device-ingestion.md` for the implemented sampling,
+deduplication, snapshot and outage behavior. See
 `docs/development/slice-4-approved-scope.md` for approved ingestion, machine-run
 heartbeat/recovery rules, administration security requirements and acceptance.
 

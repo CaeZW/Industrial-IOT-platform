@@ -37,7 +37,7 @@ export class AuthService {
   has(permission: string): boolean { return this.session()?.user.permissions.includes(permission) ?? false; }
   private accept(session: AuthSession): AuthSession {
     this.session.set(session);
-    if (!session.user.mustChangePassword && this.has('page.dashboard.view')) this.realtime.connect();
+    if (!session.user.mustChangePassword && (this.has('page.dashboard.view') || this.has('page.devices.view') || this.has('page.machines.view'))) this.realtime.connect();
     else this.realtime.disconnect();
     return session;
   }
@@ -111,4 +111,3 @@ export class AuthService {
     } finally { this.checking = false; }
   }
 }
-

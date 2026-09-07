@@ -26,6 +26,13 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
           @if (auth.has('page.devices.view')) {
           <a class="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" routerLink="/catalog/devices" routerLinkActive="bg-emerald-50 text-emerald-800">Dispositivos</a>
           }
+          @if (session.user.roles.includes('ADMINISTRATOR') && auth.has('user.manage')) {
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100" routerLink="/administration/users" routerLinkActive="bg-emerald-50 text-emerald-800">Administración</a>
+          } @else if (session.user.roles.includes('ADMINISTRATOR') && auth.has('role.manage')) {
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100" routerLink="/administration/roles">Administración</a>
+          } @else if (auth.has('configuration.write')) {
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100" routerLink="/administration/equipment">Configuración</a>
+          }
           }
           <a class="rounded-lg px-3 py-2 text-emerald-800" routerLink="/change-password">{{ session.user.username }}</a>
           <button class="rounded-lg border border-slate-300 px-3 py-2" type="button" (click)="auth.logout()">Salir</button>
@@ -40,7 +47,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     </main>
 
     <footer class="mx-auto w-[min(100%-2rem,72rem)] border-t border-slate-200 py-6 text-sm text-slate-500">
-      Sprint 1 · Catálogo de solo lectura · Alcos El Alto
+      Sprint 1 · Administración y catálogo · Alcos El Alto
     </footer>
   `,
 })

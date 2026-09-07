@@ -130,3 +130,14 @@ Prisma remains infrastructure; HTTP controllers and CLI delegate to application
 services. Initial credentials are delivered locally outside Git, not baked into
 the seed. Revoke sessions on security changes. Rollback disables application
 access and returns to localhost-only development; do not drop IAM/audit data.
+
+## ADR-021 — Web administration and durable equipment settings
+
+Owner-approved 4A/4B add protected Angular administration through NestJS, reusing
+existing IAM application services and Prisma. HTTP actor attribution, CSRF,
+permission enforcement, resource scopes and transactional audit apply. CLI
+remains available for recovery. Durable per-resource intervals are now an
+explicit requirement, default 300 seconds; Machine also stores its running key.
+No MQTT ingestion or new infrastructure is introduced in this delivery.
+Details: `../security/administration-ui.md` and
+`../development/administration-ui.md`.

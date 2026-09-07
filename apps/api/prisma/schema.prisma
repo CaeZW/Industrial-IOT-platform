@@ -6,7 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["core", "iam", "audit"]
+  schemas  = ["core", "iam", "audit", "operations"]
 }
 
 model Plant {
@@ -41,6 +41,14 @@ model Area {
 }
 
 model Machine {
+  manualOperations ManualOperation[]
+  runs MachineRun[]
+  data ProcessData[]
+  ingestionState MachineIngestionState?
+  persistenceIntervalSeconds Int @default(300) @map("persistence_interval_seconds")
+  runningKey String @default("en_marcha") @map("running_key") @db.VarChar(120)
+  registrationMode String @default("AUTOMATIC") @map("registration_mode") @db.VarChar(20)
+  manualFormDefinition Json @default("[]") @map("manual_form_definition") @db.JsonB
   id              String   @id @default(uuid()) @db.Uuid
   areaId          String   @map("area_id") @db.Uuid
   code            String?  @unique @db.VarChar(120)
@@ -60,6 +68,9 @@ model Machine {
 }
 
 model Device {
+  data DeviceData[]
+  ingestionState DeviceIngestionState?
+  persistenceIntervalSeconds Int @default(300) @map("persistence_interval_seconds")
   id             String   @id @default(uuid()) @db.Uuid
   areaId         String   @map("area_id") @db.Uuid
   code           String?  @unique @db.VarChar(120)
@@ -78,7 +89,89 @@ model Device {
   @@schema("core")
 }
 
+model DeviceData {
+  id String @id @default(uuid()) @db.Uuid
+  deviceId String @map("device_id") @db.Uuid
+  eventId String @map("event_id") @db.Uuid
+  eventTime DateTime @map("event_time") @db.Timestamptz(3)
+  receivedAt DateTime @map("received_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  sourceType String @map("source_type") @db.VarChar(20)
+  readings Json @db.JsonB
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+  @@unique([deviceId, eventId])
+  @@index([deviceId, eventTime(sort: Desc), id(sort: Desc)])
+  @@map("device_data")
+  @@schema("operations")
+}
+
+model DeviceIngestionState {
+  deviceId String @id @map("device_id") @db.Uuid
+  lastEventId String @map("last_event_id") @db.Uuid
+  lastEventTime DateTime @map("last_event_time") @db.Timestamptz(3)
+  lastPersistedAt DateTime @map("last_persisted_at") @db.Timestamptz(3)
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+  @@map("device_ingestion_state")
+  @@schema("operations")
+}
+
+model MachineRun {
+  origin String @default("AUTOMATIC") @db.VarChar(20)
+  startedById String? @map("started_by_id") @db.Uuid
+  closedById String? @map("closed_by_id") @db.Uuid
+  startedBy User? @relation("RunStarter", fields: [startedById], references: [id], onDelete: Restrict)
+  closedBy User? @relation("RunCloser", fields: [closedById], references: [id], onDelete: Restrict)
+  id String @id @default(uuid()) @db.Uuid
+  machineId String @map("machine_id") @db.Uuid
+  startedAt DateTime @map("started_at") @db.Timestamptz(3)
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz(3)
+  lastHeartbeatAt DateTime @map("last_heartbeat_at") @db.Timestamptz(3)
+  observerId String @map("observer_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  machine Machine @relation(fields: [machineId], references: [id], onDelete: Restrict)
+  data ProcessData[]
+  @@unique([id, machineId])
+  @@index([machineId, startedAt(sort: Desc), id(sort: Desc)])
+  @@map("machine_runs")
+  @@schema("operations")
+}
+
+model ProcessData {
+  recordedById String? @map("recorded_by_id") @db.Uuid
+  recordedBy User? @relation(fields: [recordedById], references: [id], onDelete: Restrict)
+  id String @id @default(uuid()) @db.Uuid
+  machineId String @map("machine_id") @db.Uuid
+  machineRunId String? @map("machine_run_id") @db.Uuid
+  eventId String @map("event_id") @db.Uuid
+  eventTime DateTime @map("event_time") @db.Timestamptz(3)
+  receivedAt DateTime @map("received_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  sourceType String @map("source_type") @db.VarChar(20)
+  readings Json @db.JsonB
+  machine Machine @relation(fields: [machineId], references: [id], onDelete: Restrict)
+  run MachineRun? @relation(fields: [machineRunId, machineId], references: [id, machineId], onDelete: Restrict)
+  @@unique([machineId, eventId])
+  @@index([machineRunId, eventTime(sort: Desc), id(sort: Desc)])
+  @@index([machineId, eventTime(sort: Desc), id(sort: Desc)])
+  @@map("process_data")
+  @@schema("operations")
+}
+
+model MachineIngestionState {
+  machineId String @id @map("machine_id") @db.Uuid
+  lastEventId String @map("last_event_id") @db.Uuid
+  lastEventTime DateTime @map("last_event_time") @db.Timestamptz(3)
+  lastPersistedAt DateTime? @map("last_persisted_at") @db.Timestamptz(3)
+  machine Machine @relation(fields: [machineId], references: [id], onDelete: Restrict)
+  @@map("machine_ingestion_state")
+  @@schema("operations")
+}
+
 model User {
+  startedRuns MachineRun[] @relation("RunStarter")
+  closedRuns MachineRun[] @relation("RunCloser")
+  manualReadings ProcessData[]
+  manualOperations ManualOperation[]
   id                 String      @id @default(uuid()) @db.Uuid
   username           String      @unique @db.VarChar(64)
   name               String      @db.VarChar(160)
@@ -95,6 +188,21 @@ model User {
 
   @@map("users")
   @@schema("iam")
+}
+
+model ManualOperation {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  machineId String @map("machine_id") @db.Uuid
+  key String @db.Uuid
+  fingerprint String @db.VarChar(64)
+  response Json @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  machine Machine @relation(fields: [machineId], references: [id], onDelete: Restrict)
+  @@unique([userId, machineId, key])
+  @@map("manual_operations")
+  @@schema("operations")
 }
 
 model Role {

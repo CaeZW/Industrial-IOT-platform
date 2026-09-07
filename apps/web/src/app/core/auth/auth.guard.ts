@@ -13,6 +13,9 @@ export const authGuard: CanActivateFn = async (route) => {
       return router.parseUrl('/change-password');
     }
     const permission: unknown = route.data['permission'];
+    if (route.data['administrator'] === true && !session.user.roles.includes('ADMINISTRATOR')) {
+      return router.parseUrl('/forbidden');
+    }
     if (typeof permission === 'string' && !session.user.permissions.includes(permission)) {
       return router.parseUrl('/forbidden');
     }
@@ -22,4 +25,3 @@ export const authGuard: CanActivateFn = async (route) => {
     return router.parseUrl('/login');
   }
 };
-

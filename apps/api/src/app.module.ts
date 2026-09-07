@@ -8,6 +8,9 @@ import { HealthModule } from './health/health.module.js';
 import { MessagingModule } from './messaging/messaging.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { AdministrationModule } from './administration/administration.module.js';
+import { DeviceDataModule } from './device-data/device-data.module.js';
+import { MachineDataModule } from './machine-data/machine-data.module.js';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import { AuthModule } from './auth/auth.module.js';
     }),
     DatabaseModule,
     AuthModule,
+    AdministrationModule,
+    DeviceDataModule,
+    MachineDataModule,
     CatalogModule,
     MessagingModule,
     HealthModule,

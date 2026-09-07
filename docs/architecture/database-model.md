@@ -122,3 +122,48 @@ excluded from MQTT integration until a stable code is assigned. The supplied
 Slice 3 adds `iam` and `audit` schemas. Sessions store token hashes and separate
 absolute/idle timestamps. Login windows store hashed throttle keys, never raw
 passwords or tokens. Roles/permissions and resource scopes remain relational.
+
+Slice 4B adds `persistence_interval_seconds` to Machine and Device (default 300,
+integer 1..86400) and `running_key` to Machine (default `en_marcha`, nonblank,
+maximum 120 characters). The owner explicitly requires editing these per
+resource in Angular and retaining changes across restarts. No publication or
+acquisition settings are stored here. Changes and their audit commit atomically.
+Inventory seeding preserves settings.
+
+4C adds operations.device_data (JSONB, unique device/event ID, UTC event/receipt/
+creation timestamps, descending device/time/id index) and one small
+operations.device_ingestion_state cursor per device. The cursor stores only the
+last event ID/time and last sampled receipt time; it is updated for every fresh
+message without storing every JSONB historically. Device row locks serialize
+sampling and deduplication, with cursor and optional history insert in one
+transaction. See ../development/device-ingestion.md for exact semantics and limits.
+
+4D adds `operations.machine_runs`, `operations.process_data` and
+`operations.machine_ingestion_state`. A partial unique index permits only one
+open run per machine. A composite foreign key enforces that a process reading
+and its run belong to the same machine. Process event IDs are unique per machine.
+The machine row lock serializes run transitions, durable heartbeat updates,
+sampling and ordering cursors in one transaction. Every accepted ON refreshes
+the heartbeat; only the first reading of each run and interval samples create
+JSONB history. OFF creates no process sample. The internal run observation ID
+supports restart/reconnection recovery without introducing a closure label.
+Run duration is derived from start and finish (or latest confirmed heartbeat).
+See ../development/machine-ingestion.md for recovery semantics and limitations.
+
+4E adds run origin (AUTOMATIC/MANUAL), started_by_id/closed_by_id and
+process_data.recorded_by_id referencing iam.users with restrictive deletion.
+Database checks require responsible users for manual runs/readings. Existing
+automatic records retain their data without fabricated actors. A manual run is
+created with both timestamps, so its duration is finalized immediately; its
+heartbeat field equals the supplied start only for schema compatibility.
+operations.manual_operations stores user/machine/UUID-key, a request fingerprint
+and response for durable idempotency. Changes, sample, receipt and audit commit
+atomically under the machine row lock. MQTT cannot mutate an open manual run,
+nor open a delayed automatic run before a recorded manual closure.
+No separate process table per form and no additional infrastructure are introduced.
+
+`core.machines.registration_mode` selects AUTOMATIC or MANUAL.
+`core.machines.manual_form_definition` is a JSONB array describing the required
+manual field keys, labels and primitive types. It is validation/presentation
+metadata, not process values; submitted values remain in
+`operations.process_data.readings` JSONB.

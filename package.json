@@ -8,6 +8,10 @@
     "pnpm": ">=11 <12"
   },
   "scripts": {
+    "simulate:machine:init": "pnpm --filter @industrial-iot-platform/api simulate:machine init",
+    "simulate:machine": "pnpm --filter @industrial-iot-platform/api simulate:machine",
+    "simulate:device:init": "pnpm --filter @industrial-iot-platform/api simulate:device init",
+    "simulate:device": "pnpm --filter @industrial-iot-platform/api simulate:device",
     "users": "pnpm --filter @industrial-iot-platform/api users",
     "users:init": "pnpm users init",
     "users:create": "pnpm users create",

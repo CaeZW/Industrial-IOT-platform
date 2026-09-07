@@ -13,16 +13,18 @@ export interface TemporaryCredential {
   readonly password: string;
 }
 export type DeliverCredentials = (credentials: readonly TemporaryCredential[]) => Promise<void>;
+export type AdministrationActor = string | Pick<AuditInput, 'actor' | 'userId' | 'sourceIp' | 'userAgent' | 'correlationId'>;
 
 @Injectable()
 export class UsersService {
   constructor(private readonly repository: UsersRepository, private readonly passwords: PasswordService,
     private readonly audit: AuthRepository) {}
-  private event(actor: string, action: string, target?: string): AuditInput {
-    return { actor: actor.slice(0, 160), action, result: 'SUCCESS', reason: 'LOCAL_ADMINISTRATION',
-      resourceType: 'USER', ...(target ? { resourceId: target } : {}), correlationId: randomUUID() };
+  private event(actor: AdministrationActor, action: string, target?: string): AuditInput {
+    const identity = typeof actor === 'string' ? { actor: actor.slice(0, 160), correlationId: randomUUID() } : actor;
+    return { ...identity, action, result: 'SUCCESS', reason: typeof actor === 'string' ? 'LOCAL_ADMINISTRATION' : 'HTTP_ADMINISTRATION',
+      resourceType: 'USER', ...(target ? { resourceId: target } : {}) };
   }
-  private async run<T>(actor: string, action: string, target: string | undefined,
+  private async run<T>(actor: AdministrationActor, action: string, target: string | undefined,
     work: (event: AuditInput) => Promise<T>): Promise<T> {
     const event = this.event(actor, action, target);
     try { return await work(event); } catch (error) {
@@ -62,7 +64,7 @@ export class UsersService {
       return prepared.length;
     });
   }
-  async create(input: UserInput, scopeCodes: readonly string[], actor: string, deliver: DeliverCredentials): Promise<void> {
+  async create(input: UserInput, scopeCodes: readonly string[], actor: AdministrationActor, deliver: DeliverCredentials): Promise<void> {
     await this.run(actor, 'user.create', input.username, async (event) => {
       this.validate(input);
       if ((await this.repository.list()).some(({ username }) => username === input.username)) {
@@ -75,17 +77,17 @@ export class UsersService {
       await this.repository.create({ ...input, scopes, passwordHash }, event);
     });
   }
-  list(actor: string) {
+  list(actor: AdministrationActor) {
     return this.run(actor, 'users.list', undefined, async (event) => {
       await this.audit.audit(event);
       return this.repository.list();
     });
   }
-  setActive(username: string, active: boolean, actor: string) {
+  setActive(username: string, active: boolean, actor: AdministrationActor) {
     return this.run(actor, active ? 'user.activate' : 'user.deactivate', username,
       (event) => this.repository.setActive(username, active, event));
   }
-  resetPassword(username: string, actor: string, deliver: DeliverCredentials) {
+  resetPassword(username: string, actor: AdministrationActor, deliver: DeliverCredentials) {
     return this.run(actor, 'user.password.reset', username, async (event) => {
       if (!(await this.repository.list()).some((user) => user.username === username)) {
         throw new BadRequestException('Usuario inexistente.');
@@ -96,13 +98,13 @@ export class UsersService {
       await this.repository.resetPassword(username, hash, event);
     });
   }
-  setAccess(username: string, role: string, scopes: readonly string[], actor: string) {
+  setAccess(username: string, role: string, scopes: readonly string[], actor: AdministrationActor) {
     return this.run(actor, 'user.access.change', username, async (event) => {
       this.validateRole(role);
       await this.repository.setAccess(username, role, await this.repository.resolveScopes(scopes), event);
     });
   }
-  setPermissions(role: string, permissions: readonly string[], actor: string) {
+  setPermissions(role: string, permissions: readonly string[], actor: AdministrationActor) {
     return this.run(actor, 'role.permissions.change', role,
       (event) => this.repository.setPermissions(role, permissions, event));
   }
@@ -113,4 +115,3 @@ export class UsersService {
     });
   }
 }
-

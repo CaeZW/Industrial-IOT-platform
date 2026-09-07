@@ -14,11 +14,15 @@ config({ path: '../../.env', quiet: true });
 let prisma: PrismaService;
 let repository: PrismaCatalogRepository;
 let access: CatalogAccess;
+let simulatedDevices = 0;
+let simulatedMachines = 0;
 
 before(async () => {
   const environment = validateEnvironment({ ...process.env });
   prisma = new PrismaService(new ConfigService(environment));
   repository = new PrismaCatalogRepository(prisma);
+  simulatedDevices = await prisma.device.count({ where: { code: 'SIM-DEVICE-01', deviceType: 'LOCAL_SIMULATOR', area: { code: 'ESTABILIDAD' } } });
+  simulatedMachines = await prisma.machine.count({ where: { code: 'SIM-MACHINE-01', machineType: 'LOCAL_SIMULATOR', area: { code: 'MANTENIMIENTO' } } });
   const plant = await prisma.plant.findUniqueOrThrow({ where: { code: 'ALCOS-EL-ALTO' } });
   access = { scopes: [{ type: 'PLANT', resourceId: plant.id }], permissions: ['page.machines.view', 'page.devices.view'] };
 });
@@ -34,10 +38,12 @@ describe('Prisma catalog repository', () => {
     assert.deepEqual(overview.totals, {
       plants: 1,
       areas: 12,
-      machines: 45,
-      devices: 40,
+      machines: 45 + simulatedMachines,
+      devices: 40 + simulatedDevices,
     });
     assert.equal(overview.plants[0]?.name, 'Alcos El Alto');
+    assert.equal(await prisma.device.count({ where: { legacyDeviceId: { not: null } } }), 40);
+    assert.equal(await prisma.machine.count({ where: { legacyMachineId: { not: null } } }), 45);
   });
 
   it('paginates and searches machines deterministically', async () => {
@@ -49,7 +55,7 @@ describe('Prisma catalog repository', () => {
     }, access);
 
     assert.equal(firstPage.items.length, 10);
-    assert.equal(firstPage.meta.totalItems, 45);
+    assert.equal(firstPage.meta.totalItems, 45 + simulatedMachines);
     assert.equal(firstPage.meta.totalPages, 5);
     assert.equal(search.items.length, 1);
     assert.equal(search.items[0]?.code, 'MQ-24-46');
@@ -97,7 +103,7 @@ describe('Prisma catalog repository', () => {
       areaId: qualityArea.id,
     }, access);
 
-    assert.equal(stabilityDevices.meta.totalItems, 12);
+    assert.equal(stabilityDevices.meta.totalItems, 12 + simulatedDevices);
     assert.equal(qualityDevices.meta.totalItems, 0);
     assert.equal(
       stabilityDevices.items.every(

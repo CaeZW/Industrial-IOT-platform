@@ -42,6 +42,18 @@ function areaId(areaByName: ReadonlyMap<string, string>, name: string): string {
 
   return id;
 }
+function manualMachine(legacyId: number) {
+  const definitions: Record<number, readonly { key: string; label: string; type: 'number' | 'text' | 'boolean' }[]> = {
+    2: [{ key: 'obs', label: 'Observaciones', type: 'text' }, { key: 'w407', label: 'W407', type: 'boolean' }, { key: 'w415', label: 'W415', type: 'boolean' }, { key: 'presion', label: 'Presión', type: 'number' }, { key: 'purgaFondo', label: 'Purga de fondo', type: 'boolean' }],
+    3: [{ key: 'obs', label: 'Observaciones', type: 'text' }, { key: 'ruido', label: 'Ruido', type: 'boolean' }, { key: 'aceite', label: 'Aceite', type: 'boolean' }, { key: 'presion', label: 'Presión', type: 'number' }, { key: 'temperatura', label: 'Temperatura', type: 'number' }],
+    6: [{ key: 'obs', label: 'Observaciones', type: 'text' }, { key: 'presion', label: 'Presión', type: 'number' }, { key: 'volumen', label: 'Volumen', type: 'number' }, { key: 'temperatura', label: 'Temperatura', type: 'number' }, { key: 'conductividad', label: 'Conductividad', type: 'number' }],
+    7: [{ key: 'temp_in', label: 'Temperatura de entrada', type: 'number' }, { key: 'temp_out', label: 'Temperatura de salida', type: 'number' }],
+    39: [{ key: 'Frecuencia', label: 'Frecuencia', type: 'number' }],
+    45: [{ key: 'Dureza', label: 'Dureza', type: 'number' }, { key: 'Volumen', label: 'Volumen', type: 'number' }],
+  };
+  const shared = definitions[legacyId] ?? (legacyId === 4 || legacyId === 5 ? definitions[3] : legacyId === 40 ? definitions[39] : undefined);
+  return shared ? { registrationMode: 'MANUAL', manualFormDefinition: [...shared] } : {};
+}
 
 async function upsertMachines(
   prisma: PrismaClient,
@@ -60,7 +72,7 @@ async function upsertMachines(
     await prisma.machine.upsert({
       where: { legacyMachineId: record.legacyId },
       update: data,
-      create: { ...data, legacyMachineId: record.legacyId },
+      create: { ...data, legacyMachineId: record.legacyId, ...manualMachine(record.legacyId) },
     });
   }
 }

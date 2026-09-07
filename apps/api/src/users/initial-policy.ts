@@ -1,9 +1,10 @@
 export const catalogPermissions = ['page.dashboard.view', 'page.machines.view', 'page.devices.view'] as const;
 const reporting = [...catalogPermissions, 'alarm.acknowledge', 'report.create'];
+const manual = ['process.manual.write', 'machine.run.manual.manage'];
 export const initialRoles = [
-  { code: 'ADMINISTRATOR', name: 'Administrador', permissions: [...reporting, 'machine.control', 'configuration.write', 'user.manage', 'role.manage', 'audit.read'] },
-  { code: 'SUPERVISOR', name: 'Supervisor', permissions: [...reporting, 'machine.control', 'audit.read'] },
-  { code: 'MAINTENANCE', name: 'Mantenimiento', permissions: [...catalogPermissions, 'machine.control', 'alarm.acknowledge'] },
+  { code: 'ADMINISTRATOR', name: 'Administrador', permissions: [...reporting, ...manual, 'machine.control', 'configuration.write', 'user.manage', 'role.manage', 'audit.read'] },
+  { code: 'SUPERVISOR', name: 'Supervisor', permissions: [...reporting, ...manual, 'machine.control', 'audit.read'] },
+  { code: 'MAINTENANCE', name: 'Mantenimiento', permissions: [...catalogPermissions, ...manual, 'machine.control', 'alarm.acknowledge'] },
   { code: 'OPERATOR', name: 'Operador', permissions: [...catalogPermissions] },
   { code: 'QUALITY_CONTROL', name: 'Control de Calidad', permissions: reporting },
   { code: 'PRODUCTION', name: 'Producción', permissions: reporting },
@@ -33,4 +34,3 @@ export function defaultScopeCodes(role: string): string[] {
     'SOLIDOS-III', 'ACOND-NO-ESTERIL', 'SOLIDOS-II', 'SOLIDOS-I',
     'SEMISOLIDOS', 'CONTROL-CALIDAD', 'ESTABILIDAD'].map((code) => 'AREA:' + code);
 }
-

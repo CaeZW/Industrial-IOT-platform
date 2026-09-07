@@ -10,12 +10,13 @@
     "test": "ng test --watch=false"
   },
   "dependencies": {
-    "@industrial-iot-platform/contracts": "workspace:*",
     "@angular/common": "22.1.5",
     "@angular/compiler": "22.1.5",
     "@angular/core": "22.1.5",
+    "@angular/forms": "22.1.5",
     "@angular/platform-browser": "22.1.5",
     "@angular/router": "22.1.5",
+    "@industrial-iot-platform/contracts": "workspace:*",
     "rxjs": "7.8.2",
     "socket.io-client": "4.8.3",
     "tslib": "2.8.1"

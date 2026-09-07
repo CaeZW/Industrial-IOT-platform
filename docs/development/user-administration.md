@@ -1,5 +1,10 @@
 # Administración local de usuarios — Sprint 1, Slice 3
 
+La gestión habitual ya dispone de pantallas web en 4A; consulta
+`administration-ui.md`. Este documento conserva los comandos de recuperación
+y primera instalación. Las referencias a ausencia de UI describen el cierre
+original de Slice 3, anterior a 4A.
+
 ## Alcance y seguridad
 
 Estos comandos administran únicamente PostgreSQL local. No requieren que NestJS

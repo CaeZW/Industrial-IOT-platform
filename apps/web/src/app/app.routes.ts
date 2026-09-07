@@ -2,6 +2,16 @@ import type { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
+  { path: 'machines/:id', title: 'Máquina · Parámetros y horas', canActivate: [authGuard], data: { permission: 'page.machines.view' },
+    loadComponent: () => import('./features/machines/machine-data.component').then((m) => m.MachineDataComponent) },
+  { path: 'devices/:id', title: 'Lecturas del device', canActivate: [authGuard], data: { permission: 'page.devices.view' },
+    loadComponent: () => import('./features/devices/device-data.component').then((m) => m.DeviceDataComponent) },
+  { path: 'administration/users', title: 'Usuarios · Administración', canActivate: [authGuard],
+    data: { permission: 'user.manage', administrator: true }, loadComponent: () => import('./features/administration/users-admin.component').then((m) => m.UsersAdminComponent) },
+  { path: 'administration/roles', title: 'Roles · Administración', canActivate: [authGuard],
+    data: { permission: 'role.manage', administrator: true }, loadComponent: () => import('./features/administration/roles-admin.component').then((m) => m.RolesAdminComponent) },
+  { path: 'administration/equipment', title: 'Equipos · Administración', canActivate: [authGuard],
+    data: { permission: 'configuration.write' }, loadComponent: () => import('./features/administration/equipment-settings.component').then((m) => m.EquipmentSettingsComponent) },
   { path: 'login', title: 'Acceso · Industrial IoT', loadComponent: () => import('./features/auth/login.component').then((m) => m.LoginComponent) },
   { path: 'change-password', title: 'Contraseña · Industrial IoT', canActivate: [authGuard], loadComponent: () => import('./features/auth/change-password.component').then((m) => m.ChangePasswordComponent) },
   { path: 'forbidden', title: 'Acceso restringido', canActivate: [authGuard], loadComponent: () => import('./features/auth/forbidden.component').then((m) => m.ForbiddenComponent) },

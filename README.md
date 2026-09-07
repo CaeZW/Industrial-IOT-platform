@@ -1,5 +1,18 @@
 # Industrial IoT Platform
 
+Sprint 1 deliveries 4A/4B add web administration for users, roles, permissions
+and per-equipment persistence settings. See
+[administration instructions](docs/development/administration-ui.md).
+4C adds device MQTT ingestion, interval JSONB history and scoped realtime.
+See [device simulation and preview](docs/development/device-ingestion.md).
+4D adds machine process readings, operating runs, persistent heartbeats and recovery.
+See [machine simulation and dashboard](docs/development/machine-ingestion.md).
+These screens monitor equipment; they do not control physical machines.
+4E adds two-step manual process forms: a completed start/stop time interval and
+one machine-specific JSONB reading with responsible users and idempotent audited
+saves. 4F validates complete local journeys and regressions.
+See [manual processes and verification](docs/development/manual-processes.md).
+
 On-premise Industrial IoT platform for machine monitoring, data acquisition,
 historian, alarms, commands, production, reports, maintenance, energy and
 future industrial applications.
@@ -307,7 +320,8 @@ The read-only equipment catalog is implemented through NestJS REST and Angular
 feature routes. Sprint 1 Slice 3 adds local authentication, role permissions and
 resource scopes, mandatory initial password replacement, one-hour idle/eight-hour
 absolute sessions, protected WebSocket connections and audited administration
-commands. MQTT data ingestion remains the separate pending Slice 4.
+commands. Slice 4 now includes administration UI, automatic ingestion and
+manual processes; its local verification is documented in the development guides.
 
 Initialize the supplied accounts once (creates missing users only):
 

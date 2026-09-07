@@ -10,6 +10,8 @@ export const CurrentSession = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): SessionRecord => ctx.switchToHttp().getRequest<AuthRequest>().session!,
 );
 export interface AuthRequest {
+  readonly body?: unknown;
+  manualOriginalReadings?: unknown;
   readonly headers: Record<string, string | string[] | undefined>;
   readonly method: string;
   readonly ip?: string;
@@ -31,4 +33,3 @@ export function cookieToken(cookie: string | undefined): string | undefined {
     .filter((part) => part.startsWith('iot_session='));
   return matches?.length === 1 ? matches[0]!.slice('iot_session='.length) : undefined;
 }
-

@@ -1,7 +1,10 @@
 # Sprint 1 Slice 4 — Approved scope
 
-Status: approved requirements; implementation and acceptance checks pending.
-This document does not mark Sprint 1 complete.
+Status: 4A (administration UI) and 4B (persistent equipment settings) implemented.
+4C device ingestion, interval JSONB history and scoped realtime are implemented.
+4D machine ingestion/runs/recovery and the read-only dashboard are implemented.
+4E manual entry and 4F local verification are implemented.
+Sprint 1 foundation is complete for this scope; this is not production approval.
 
 ## Administrative UI
 
@@ -73,10 +76,12 @@ changes. Recovery must work from PostgreSQL, not only process memory.
 ## Manual entry and reports
 
 Manual machines use authenticated Angular forms through NestJS REST, storing
-JSONB with source MANUAL, responsible user and run association. Manual saves are
-immediate, not interval sampled; manual runs do not expire for lack of MQTT.
-The owner approved ADMINISTRATOR, SUPERVISOR and MAINTENANCE for manual reading
-entry and manual run start/close, restricted to their authorized machines.
+JSONB with source MANUAL, responsible user and run association. The user first
+records the complete start/stop date-time interval and then one complete reading
+defined by the machine's JSONB form metadata. Manual saves are immediate, not
+interval sampled; these controls are completed when created and do not depend on
+MQTT heartbeat. The owner approved ADMINISTRATOR, SUPERVISOR and MAINTENANCE for
+manual control/reading entry, restricted to their authorized machines.
 OPERATOR remains read-only; other roles receive no implicit manual-write access.
 Use explicit backend-enforced permissions for manual data entry and manual run
 management, independently of machine.control. These operations record business
@@ -87,10 +92,12 @@ PDF rendering are subsequent work, not implicitly completed by ingestion.
 
 ## Delivery and verification
 
-1. Implement protected user/role administration and its Angular feature.
-2. Implement durable per-equipment settings and administrative editing.
-3. Implement ingestion, runs, recovery and authorized realtime views.
-4. Implement the manual-entry flow with the approved role assignments and scopes.
+1. 4A implemented: protected user/role administration and its Angular feature.
+2. 4B implemented: durable per-equipment settings and administrative editing.
+3. 4C implemented for devices, with local simulation and scoped realtime.
+4. 4D implemented for machines, linked readings, runs, recovery and dashboard.
+5. 4E implemented: manual entry with the approved role assignments and scopes.
+6. 4F verified locally: complete journeys, authorization, failures and stored-data checks.
 
 Check direct unauthorized HTTP calls, scope restrictions, last-administrator
 protection, credential non-disclosure, session revocation, audit and settings

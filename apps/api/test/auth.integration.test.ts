@@ -31,17 +31,19 @@ let areaId: string;
 let maintenanceId: string;
 let machineId: string;
 let plantId: string;
+let simulatedDevices = 0;
 let base: string;
 let cookie = '';
 let changedPassword = password;
 const origin = 'http://127.0.0.1:4200';
+const testIp = '198.18.2.' + (parseInt(suffix.slice(0, 2), 16) % 250 + 1);
 const actor = 'integration:' + suffix;
 const createdUsernames: string[] = [username];
 
 async function request(path: string, method = 'GET', body?: object, sessionCookie = cookie, requestOrigin = origin) {
   return fetch(base + '/api/' + path, {
     method,
-    headers: { Origin: requestOrigin, 'X-IOT-Request': '1', 'Content-Type': 'application/json',
+    headers: { Origin: requestOrigin, 'X-IOT-Request': '1', 'X-Forwarded-For': testIp, 'Content-Type': 'application/json',
       ...(sessionCookie ? { Cookie: sessionCookie } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
@@ -74,6 +76,7 @@ before(async () => {
   const plant = await prisma.plant.findUniqueOrThrow({ where: { code: 'ALCOS-EL-ALTO' } });
   plantId = plant.id;
   areaId = (await prisma.area.findFirstOrThrow({ where: { code: 'ESTABILIDAD' } })).id;
+  simulatedDevices = await prisma.device.count({ where: { code: 'SIM-DEVICE-01', deviceType: 'LOCAL_SIMULATOR', areaId } });
   maintenanceId = (await prisma.area.findFirstOrThrow({ where: { code: 'MANTENIMIENTO' } })).id;
   machineId = (await prisma.machine.findUniqueOrThrow({ where: { code: 'MQ-24-46' } })).id;
   await prisma.role.create({ data: { code: roleCode, name: 'Test fixture',
@@ -86,6 +89,7 @@ before(async () => {
   // Load emitted Nest decorators: tsx intentionally does not emit DI metadata.
   const compiled = await import(new URL('../.tools/app.module.js', import.meta.url).href) as { AppModule: Type<unknown> };
   app = await NestFactory.create(compiled.AppModule, { logger: false });
+  app.getHttpAdapter().getInstance().set('trust proxy', 'loopback');
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }));
   await app.listen(0, '127.0.0.1');
@@ -128,7 +132,7 @@ describe('HTTP authentication, scopes and administration', { concurrency: false 
     const response = await request('catalog/overview');
     assert.equal(response.status, 200);
     const data = await response.json() as { totals: object };
-    assert.deepEqual(data.totals, { plants: 1, areas: 1, machines: 0, devices: 12 });
+    assert.deepEqual(data.totals, { plants: 1, areas: 1, machines: 0, devices: 12 + simulatedDevices });
     const forbidden = await request('catalog/machines?areaId=' + maintenanceId);
     const list = await forbidden.json() as { items: unknown[]; meta: { totalItems: number } };
     assert.equal(list.items.length, 0);
@@ -136,7 +140,7 @@ describe('HTTP authentication, scopes and administration', { concurrency: false 
     const areas = await (await request('catalog/areas')).json() as { items: { id: string; deviceCount: number }[] };
     assert.equal(areas.items.length, 1);
     assert.equal(areas.items[0]?.id, areaId);
-    assert.equal(areas.items[0]?.deviceCount, 12);
+    assert.equal(areas.items[0]?.deviceCount, 12 + simulatedDevices);
   });
   it('authorizes WebSocket handshakes and refuses absent or hostile credentials', async () => {
     assert.equal(await socketResult(cookie), 'connected');

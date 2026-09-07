@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import type {
   CatalogArea,
   CatalogEquipment,
@@ -19,6 +19,7 @@ const initialMeta: PageMetadata = {
 
 @Component({
   selector: 'app-equipment-page',
+  imports: [RouterLink],
   template: `
     <header class="mb-8">
       <p class="text-xs font-bold tracking-[0.12em] text-emerald-700 uppercase">
@@ -88,6 +89,8 @@ const initialMeta: PageMetadata = {
               </span>
             </div>
             <h2 class="mt-3 text-xl font-bold text-slate-900">{{ item.name }}</h2>
+            @if (kind() === 'device') { <a class="mt-2 text-sm font-semibold text-emerald-800 underline" [routerLink]="['/devices', item.id]">Ver lecturas e histórico</a> }
+            @else { <a class="mt-2 text-sm font-semibold text-emerald-800 underline" [routerLink]="['/machines', item.id]">Ver parámetros y control de horas</a> }
             <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">
               {{ item.description ?? 'Sin descripción' }}
             </p>
